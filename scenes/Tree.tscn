@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://mhjvna0bkuxn"]
+[gd_scene load_steps=3 format=3 uid="uid://mhjvna0bkuxn"]
 
 [ext_resource type="Texture2D" uid="uid://y82ci4pn1x2x" path="res://assets/Data_Square.jpg" id="2_874r4"]
+[ext_resource type="Script" uid="uid://c133en4xs5r8y" path="res://scripts/testPersona.cs" id="2_omb14"]
 
 [node name="Tree" type="Node2D"]
 
@@ -119,3 +120,6 @@ offset_top = 564.0
 offset_right = 1134.0
 offset_bottom = 624.0
 text = "Volver"
+
+[node name="PersonaPrueba" type="Node" parent="."]
+script = ExtResource("2_omb14")
