@@ -1,8 +1,8 @@
 using Godot;
 using System;
-using ArbolGenealogico;
+using ArbolGenealogico.scripts.Models;
 
-namespace testPersona
+namespace ArbolGenealogico.scripts.Models
 {
 	public partial class testPersona : Node
 	{

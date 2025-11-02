@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace ArbolGenealogico
+namespace ArbolGenealogico.scripts.Models
 {
 	public partial class Persona
 	{
