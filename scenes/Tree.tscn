@@ -1,12 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://mhjvna0bkuxn"]
+[gd_scene load_steps=4 format=3 uid="uid://mhjvna0bkuxn"]
 
+[ext_resource type="Script" uid="uid://dsmi52744f15d" path="res://scripts/AgregarPersona.cs" id="1_874r4"]
 [ext_resource type="Texture2D" uid="uid://y82ci4pn1x2x" path="res://assets/Data_Square.jpg" id="2_874r4"]
 [ext_resource type="Script" uid="uid://c133en4xs5r8y" path="res://scripts/testPersona.cs" id="2_omb14"]
 
 [node name="Tree" type="Node2D"]
+script = ExtResource("1_874r4")
 
 [node name="DataSquare" type="Sprite2D" parent="."]
-position = Vector2(576, 324.5)
+position = Vector2(576, 342.5)
 scale = Vector2(1.5475, 0.49402672)
 texture = ExtResource("2_874r4")
 
@@ -16,102 +18,149 @@ scale = Vector2(0.39374998, 0.5144062)
 texture = ExtResource("2_874r4")
 
 [node name="Label" type="Label" parent="."]
-offset_right = 284.0
-offset_bottom = 46.0
+offset_left = -2.0
+offset_top = 1.0
+offset_right = 282.0
+offset_bottom = 47.0
 text = "Agregar"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Label2" type="Label" parent="."]
-offset_left = 2.0
+offset_left = 15.0
 offset_top = 47.0
-offset_right = 150.0
+offset_right = 163.0
 offset_bottom = 78.0
 text = "Nombre"
 
 [node name="nombre" type="LineEdit" parent="."]
-offset_left = 5.0
-offset_top = 86.0
-offset_right = 246.0
-offset_bottom = 117.0
+offset_left = 15.0
+offset_top = 68.0
+offset_right = 256.0
+offset_bottom = 99.0
 
 [node name="Label3" type="Label" parent="."]
-offset_left = 2.0
-offset_top = 129.0
-offset_right = 150.0
-offset_bottom = 160.0
-text = "Cedula"
+offset_left = 17.0
+offset_top = 103.0
+offset_right = 165.0
+offset_bottom = 134.0
+text = "Cédula"
 
 [node name="cedula" type="LineEdit" parent="."]
-offset_left = 5.0
-offset_top = 168.0
-offset_right = 246.0
-offset_bottom = 199.0
+offset_left = 16.0
+offset_top = 125.0
+offset_right = 257.0
+offset_bottom = 156.0
 
 [node name="Label4" type="Label" parent="."]
-offset_left = 1.0
-offset_top = 208.0
-offset_right = 149.0
-offset_bottom = 239.0
+offset_left = 13.0
+offset_top = 222.0
+offset_right = 161.0
+offset_bottom = 253.0
 text = "Coordenada x"
 
 [node name="cor-x" type="LineEdit" parent="."]
-offset_left = 4.0
-offset_top = 247.0
-offset_right = 245.0
-offset_bottom = 278.0
+offset_left = 12.0
+offset_top = 245.0
+offset_right = 253.0
+offset_bottom = 276.0
 
 [node name="Label5" type="Label" parent="."]
-offset_left = 3.0
-offset_top = 291.0
-offset_right = 151.0
-offset_bottom = 322.0
+offset_left = 13.0
+offset_top = 277.0
+offset_right = 161.0
+offset_bottom = 308.0
 text = "Coordenada y"
 
 [node name="cor-y" type="LineEdit" parent="."]
-offset_left = 6.0
-offset_top = 330.0
-offset_right = 247.0
-offset_bottom = 361.0
+offset_left = 12.0
+offset_top = 300.0
+offset_right = 253.0
+offset_bottom = 331.0
 
 [node name="Label6" type="Label" parent="."]
-offset_left = 2.0
-offset_top = 378.0
-offset_right = 162.0
-offset_bottom = 409.0
+offset_left = 14.0
+offset_top = 331.0
+offset_right = 174.0
+offset_bottom = 362.0
 text = "Fecha de nacimiento"
 
 [node name="nacimiento" type="LineEdit" parent="."]
-offset_left = 5.0
-offset_top = 417.0
-offset_right = 246.0
-offset_bottom = 448.0
+offset_left = 14.0
+offset_top = 355.0
+offset_right = 255.0
+offset_bottom = 386.0
 
 [node name="Label7" type="Label" parent="."]
-offset_left = 1.0
-offset_top = 466.0
-offset_right = 161.0
-offset_bottom = 497.0
+offset_left = 17.0
+offset_top = 389.0
+offset_right = 177.0
+offset_bottom = 420.0
 text = "Edad"
 
 [node name="Edad" type="LineEdit" parent="."]
-offset_left = 4.0
-offset_top = 505.0
-offset_right = 245.0
-offset_bottom = 536.0
+offset_left = 14.0
+offset_top = 413.0
+offset_right = 255.0
+offset_bottom = 444.0
 
 [node name="cancelar" type="Button" parent="."]
-offset_left = 28.0
-offset_top = 564.0
-offset_right = 101.0
-offset_bottom = 615.0
+offset_left = 31.0
+offset_top = 580.0
+offset_right = 107.0
+offset_bottom = 631.0
 text = "Cancelar"
 
+[node name="Label12" type="Label" parent="."]
+offset_left = 17.0
+offset_top = 161.0
+offset_right = 177.0
+offset_bottom = 192.0
+text = "Madre"
+
+[node name="madre" type="OptionButton" parent="."]
+anchors_preset = -1
+anchor_right = 0.43800002
+offset_left = 73.0
+offset_top = 163.0
+offset_right = 105.0
+offset_bottom = 183.0
+
+[node name="Label13" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 193.0
+offset_right = 176.0
+offset_bottom = 224.0
+text = "Padre"
+
+[node name="padre" type="OptionButton" parent="."]
+anchors_preset = -1
+anchor_right = 0.43800002
+offset_left = 75.0
+offset_top = 196.0
+offset_right = 107.0
+offset_bottom = 216.0
+
+[node name="Label14" type="Label" parent="."]
+offset_left = 18.0
+offset_top = 448.0
+offset_right = 178.0
+offset_bottom = 479.0
+text = "Género"
+
+[node name="genero" type="OptionButton" parent="."]
+anchors_preset = -1
+anchor_right = 0.43800002
+offset_left = 87.0
+offset_top = 452.0
+offset_right = 119.0
+offset_bottom = 472.0
+
 [node name="aceptar" type="Button" parent="."]
-offset_left = 142.0
-offset_top = 563.0
-offset_right = 215.0
-offset_bottom = 614.0
+offset_left = 164.0
+offset_top = 581.0
+offset_right = 237.0
+offset_bottom = 632.0
 text = "Aceptar"
 
 [node name="Button" type="Button" parent="."]
@@ -123,3 +172,51 @@ text = "Volver"
 
 [node name="PersonaPrueba" type="Node" parent="."]
 script = ExtResource("2_omb14")
+
+[node name="Label11" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 518.0
+offset_right = 190.0
+offset_bottom = 567.0
+text = "Fecha de fallecimiento
+"
+
+[node name="fechaFallecimiento" type="LineEdit" parent="."]
+offset_left = 19.0
+offset_top = 544.0
+offset_right = 260.0
+offset_bottom = 575.0
+
+[node name="Label8" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 481.0
+offset_right = 176.0
+offset_bottom = 512.0
+text = "Estado:"
+
+[node name="Label9" type="Label" parent="."]
+offset_left = 96.0
+offset_top = 481.0
+offset_right = 256.0
+offset_bottom = 512.0
+text = "Vivo"
+
+[node name="Label10" type="Label" parent="."]
+offset_left = 169.0
+offset_top = 482.0
+offset_right = 227.0
+offset_bottom = 531.0
+text = "Muerto
+"
+
+[node name="muerto" type="CheckBox" parent="."]
+offset_left = 231.0
+offset_top = 486.0
+offset_right = 255.0
+offset_bottom = 510.0
+
+[node name="vivo" type="CheckBox" parent="."]
+offset_left = 132.0
+offset_top = 485.0
+offset_right = 156.0
+offset_bottom = 509.0
