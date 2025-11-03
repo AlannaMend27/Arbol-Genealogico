@@ -256,28 +256,5 @@ namespace ArbolGenealogico.scripts.Models
 			return $"{NombreCompleto} ({Cedula}) - {Edad} años - {Ciudad}, {Pais}";
 		}
 		
-		public string ObtenerInformacionCompleta()
-		{
-			var info = $"Nombre: {NombreCompleto}\n";
-			info += $"Cédula: {Cedula}\n";
-			info += $"Fecha de Nacimiento: {FechaNacimiento.ToShortDateString()}\n";
-			info += $"Edad: {Edad} años\n";
-			info += $"Estado: {(EstaVivo ? "Vivo" : "Fallecido")}\n";
-			
-			if (!EstaVivo && FechaFallecimiento.HasValue)
-				info += $"Fecha de Fallecimiento: {FechaFallecimiento.Value.ToShortDateString()}\n";
-				
-			info += $"Residencia: {Ciudad}, {Pais}\n";
-			info += $"Coordenadas: ({Latitud}, {Longitud})\n";
-			info += $"Generación: {Generacion}\n";
-			info += $"Hijos: {Hijos.Count}\n";
-			
-			if (Padre != null)
-				info += $"Padre: {Padre.NombreCompleto}\n";
-			if (Madre != null)
-				info += $"Madre: {Madre.NombreCompleto}\n";
-				
-			return info;
-		}
 	}
 }

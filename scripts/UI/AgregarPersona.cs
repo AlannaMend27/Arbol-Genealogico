@@ -2,6 +2,8 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using ArbolGenealogico.scripts.Models;
+using ArbolGenealogico.scripts.DataStructures;
+using ArbolGenealogico.scripts.UI;
 
 //FALTA VALIDAR NUMEROS PARA LAS COORDENADAS    
 public partial class AgregarPersona : Node2D
@@ -9,6 +11,9 @@ public partial class AgregarPersona : Node2D
 	//lista global de personas creadas (temporal)
 	private static List<string> cedulasExistentes = new List<string>();
 	private static List<Persona> personasCreadas = new List<Persona>();
+
+	// Prueba para visualizar la construccion el arbol en consola (futura implementacion en interfaz)
+	private static VisualizadorArbol visualizador = new VisualizadorArbol();
 
 	//campos de entrada del formulario
 	private LineEdit nombreInput;
@@ -250,7 +255,7 @@ public partial class AgregarPersona : Node2D
 				MostrarError(string.Join("\n", errores));
 				return;
 			}
-
+			
 			//agregar cedula a la lista de existentes
 			cedulasExistentes.Add(cedulaInput.Text);
 
@@ -259,6 +264,9 @@ public partial class AgregarPersona : Node2D
 
 			//establecer relaciones familiares
 			EstablecerPadres(nuevaPersona);
+
+			// Agregar al arbol y mostrar en consola
+			visualizador.AgregarPersonaYMostrar(nuevaPersona);
 
 			//actualizar listas SOLO si se agregó alguien masculino o femenino
 			if (nuevaPersona.GeneroPersona == Persona.Genero.Masculino ||
@@ -271,6 +279,8 @@ public partial class AgregarPersona : Node2D
 			GD.Print($"Género: {nuevaPersona.GeneroPersona}");
 			GD.Print($"Total personas: {personasCreadas.Count}");
 
+			visualizador.MostrarResumen();
+			
 			LimpiarCampos();
 		}
 		catch (Exception ex)
@@ -410,5 +420,10 @@ public partial class AgregarPersona : Node2D
 		{
 			nuevaPersona.EstablecerPadres(padre, madre);
 		}
+	}
+
+	public static Arbol ObtenerArbol()
+	{
+		return visualizador.ObtenerArbol();
 	}
 }

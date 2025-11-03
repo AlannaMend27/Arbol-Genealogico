@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://mhjvna0bkuxn"]
 
-[ext_resource type="Script" uid="uid://dsmi52744f15d" path="res://scripts/AgregarPersona.cs" id="1_874r4"]
+[ext_resource type="Script" uid="uid://dsmi52744f15d" path="res://scripts/UI/AgregarPersona.cs" id="1_874r4"]
 [ext_resource type="Texture2D" uid="uid://y82ci4pn1x2x" path="res://assets/Data_Square.jpg" id="2_874r4"]
-[ext_resource type="Script" uid="uid://c133en4xs5r8y" path="res://scripts/testPersona.cs" id="2_omb14"]
+[ext_resource type="FontFile" uid="uid://c4dmg2lbe3wws" path="res://assets/fonts/Nexa-Heavy.ttf" id="3_qvbew"]
 
 [node name="Tree" type="Node2D"]
 script = ExtResource("1_874r4")
@@ -22,6 +22,7 @@ offset_left = -2.0
 offset_top = 1.0
 offset_right = 282.0
 offset_bottom = 47.0
+theme_override_fonts/font = ExtResource("3_qvbew")
 text = "Agregar"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -171,7 +172,6 @@ offset_bottom = 624.0
 text = "Volver"
 
 [node name="PersonaPrueba" type="Node" parent="."]
-script = ExtResource("2_omb14")
 
 [node name="Label11" type="Label" parent="."]
 offset_left = 16.0
