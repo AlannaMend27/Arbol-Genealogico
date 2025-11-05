@@ -8,422 +8,492 @@ using ArbolGenealogico.scripts.UI;
 //FALTA VALIDAR NUMEROS PARA LAS COORDENADAS    
 public partial class AgregarPersona : Node2D
 {
-	//lista global de personas creadas (temporal)
-	private static List<string> cedulasExistentes = new List<string>();
-	private static List<Persona> personasCreadas = new List<Persona>();
+    private static List<string> cedulasExistentes = new List<string>();
+    private static List<Persona> personasCreadas = new List<Persona>();
 
-	// Prueba para visualizar la construccion el arbol en consola (futura implementacion en interfaz)
-	private static VisualizadorArbol visualizador = new VisualizadorArbol();
+    private static List<Persona> hombres = new List<Persona>();
+    private static List<Persona> mujeres = new List<Persona>();
 
-	//campos de entrada del formulario
-	private LineEdit nombreInput;
-	private LineEdit cedulaInput;
-	private LineEdit coordXInput;
-	private LineEdit coordYInput;
-	private LineEdit fechaInput;
-	private LineEdit edadInput;
-	private CheckBox vivoCheck;
-	private CheckBox muertoCheck;
-	private Label label11;
-	private LineEdit fechaFallecimientoInput;
-	private OptionButton opcionesPadre;
-	private OptionButton opcionesMadre;
-	private OptionButton opcionesGenero;
-	private Button aceptarBtn;
-	private Button cancelarBtn;
+    // Prueba para visualizar la construccion el arbol en consola (futura implementacion en interfaz)
+    private static VisualizadorArbol visualizador = new VisualizadorArbol();
 
-	//dialogo para mostrar errores
-	private AcceptDialog dialogoError;
+    private LineEdit nombreInput;
+    private LineEdit cedulaInput;
+    private LineEdit coordXInput;
+    private LineEdit coordYInput;
+    private LineEdit fechaInput;
+    private LineEdit edadInput;
+    private CheckBox vivoCheck;
+    private CheckBox muertoCheck;
+    private Label label11;
+    private LineEdit fechaFallecimientoInput;
+    private OptionButton opcionesPadre;
+    private OptionButton opcionesMadre;
+    private OptionButton opcionesGenero;
+    private OptionButton tipoDePersona;
+    private Label label12;
+    private Label label13;
+    private Label label16;
+    private OptionButton conyugue;
+    private Button aceptarBtn;
+    private Button cancelarBtn;
 
-	public override void _Ready()
-	{
-		//buscar los nodos en la escena
-		nombreInput = GetNode<LineEdit>("nombre");
-		cedulaInput = GetNode<LineEdit>("cedula");
-		coordXInput = GetNode<LineEdit>("cor-x");
-		coordYInput = GetNode<LineEdit>("cor-y");
-		fechaInput = GetNode<LineEdit>("nacimiento");
-		edadInput = GetNode<LineEdit>("Edad");
-		vivoCheck = GetNode<CheckBox>("vivo");
-		muertoCheck = GetNode<CheckBox>("muerto");
-		label11 = GetNode<Label>("Label11");
-		fechaFallecimientoInput = GetNode<LineEdit>("fechaFallecimiento");
-		opcionesPadre = GetNode<OptionButton>("padre");
-		opcionesMadre = GetNode<OptionButton>("madre");
-		opcionesGenero = GetNode<OptionButton>("genero");
+    private AcceptDialog dialogoError;
 
-		aceptarBtn = GetNode<Button>("aceptar");
-		cancelarBtn = GetNode<Button>("cancelar");
+    public override void _Ready()
+    {
+        nombreInput = GetNode<LineEdit>("nombre");
+        cedulaInput = GetNode<LineEdit>("cedula");
+        coordXInput = GetNode<LineEdit>("cor-x");
+        coordYInput = GetNode<LineEdit>("cor-y");
+        fechaInput = GetNode<LineEdit>("nacimiento");
+        edadInput = GetNode<LineEdit>("Edad");
+        vivoCheck = GetNode<CheckBox>("vivo");
+        muertoCheck = GetNode<CheckBox>("muerto");
+        label11 = GetNode<Label>("Label11");
+        fechaFallecimientoInput = GetNode<LineEdit>("fechaFallecimiento");
+        opcionesPadre = GetNode<OptionButton>("padre");
+        opcionesMadre = GetNode<OptionButton>("madre");
+        opcionesGenero = GetNode<OptionButton>("genero");
+        tipoDePersona = GetNode<OptionButton>("tipodepersona");
+        label12 = GetNode<Label>("Label12");
+        label13 = GetNode<Label>("Label13");
+        label16 = GetNode<Label>("Label16");
+        conyugue = GetNode<OptionButton>("conyugue");
 
-		dialogoError = new AcceptDialog();
-		dialogoError.Title = "Error";
-		dialogoError.OkButtonText = "Entendido";
-		AddChild(dialogoError);
+        aceptarBtn = GetNode<Button>("aceptar");
+        cancelarBtn = GetNode<Button>("cancelar");
 
-		//conectar botones a sus funciones
-		aceptarBtn.Pressed += OnAceptarPressed;
-		cancelarBtn.Pressed += OnCancelarPressed;
+        dialogoError = new AcceptDialog();
+        dialogoError.Title = "Error";
+        dialogoError.OkButtonText = "Entendido";
+        AddChild(dialogoError);
 
-		//conectar checkboxes para mostrar o ocultar campos
-		vivoCheck.Pressed += OnVivoPressed;
-		muertoCheck.Pressed += OnMuertoPressed;
+        //conectar botones a sus funciones
+        aceptarBtn.Pressed += OnAceptarPressed;
+        cancelarBtn.Pressed += OnCancelarPressed;
 
-		//configuracion inicial
-		vivoCheck.ButtonPressed = true;
-		label11.Visible = false;
-		fechaFallecimientoInput.Visible = false;
+        //conectar checkboxes
+        vivoCheck.Pressed += OnVivoPressed;
+        muertoCheck.Pressed += OnMuertoPressed;
 
-		//configurar opciones de genero
-		opcionesGenero.AddItem("No especificado");
-		opcionesGenero.AddItem("Masculino");
-		opcionesGenero.AddItem("Femenino");
-		opcionesGenero.AddItem("Otro");
-		opcionesGenero.Selected = 0;
+        //cambios de tipo de persona y género
+        tipoDePersona.ItemSelected += OnTipoPersonaChanged;
+        opcionesGenero.ItemSelected += OnGeneroChanged;
 
-		//configurar opciones de padres (se llenan cuando hay personas)
-		ActualizarListaPadres();
-	}
+        vivoCheck.ButtonPressed = true;
+        label11.Visible = false;
+        fechaFallecimientoInput.Visible = false;
 
-	private void OnAceptarPressed()
-	{
-		try
-		{
-			//validar campos obligatorios
-			if (string.IsNullOrWhiteSpace(nombreInput.Text))
-			{
-				MostrarError("El nombre es requerido");
-				return;
-			}
+        opcionesGenero.AddItem("No especificado");
+        opcionesGenero.AddItem("Masculino");
+        opcionesGenero.AddItem("Femenino");
+        opcionesGenero.AddItem("Otro");
+        opcionesGenero.Selected = 0;
 
-			if (string.IsNullOrWhiteSpace(cedulaInput.Text))
-			{
-				MostrarError("La cédula es requerida");
-				return;
-			}
+        tipoDePersona.AddItem("Familiar");
+        tipoDePersona.AddItem("Cónyuge");
+        tipoDePersona.Selected = 0;
 
-			//validar longitud de cedula
-			if (cedulaInput.Text.Length < 9 || cedulaInput.Text.Length > 12)
-			{
-				MostrarError("La cédula no tiene la extensión adecuada");
-				return;
-			}
+        ActualizarTodasLasListas();
+        ConfigurarVisibilidadCampos();
+    }
 
-			//validar que la cedula sea unica
-			if (cedulasExistentes.Contains(cedulaInput.Text))
-			{
-				MostrarError("Esta cédula ya está registrada");
-				return;
-			}
+    private void OnAceptarPressed()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(nombreInput.Text))
+            {
+                MostrarError("El nombre es requerido");
+                return;
+            }
 
-			//validar que el nombre no tenga numeros
-			bool tieneNumeros = false;
-			foreach (char c in nombreInput.Text)
-			{
-				if (char.IsDigit(c))
-				{
-					tieneNumeros = true;
-					break;
-				}
-			}
+            if (string.IsNullOrWhiteSpace(cedulaInput.Text))
+            {
+                MostrarError("La cédula es requerida");
+                return;
+            }
+            if (cedulaInput.Text.Length < 9 || cedulaInput.Text.Length > 12)
+            {
+                MostrarError("La cédula no tiene la extensión adecuada");
+                return;
+            }
 
-			if (tieneNumeros)
-			{
-				MostrarError("El nombre no puede contener números");
-				return;
-			}
+            //cedula unica
+            if (cedulasExistentes.Contains(cedulaInput.Text))
+            {
+                MostrarError("Esta cédula ya está registrada");
+                return;
+            }
 
-			//separar nombre del apellido
-			string[] nombreCompleto = nombreInput.Text.Trim().Split(' ');
-			string nombre = nombreCompleto[0];
-			string apellido = nombreCompleto.Length > 1 ? string.Join(" ", nombreCompleto[1..]) : "";
+            bool tieneNumeros = false;
+            foreach (char c in nombreInput.Text)
+            {
+                if (char.IsDigit(c))
+                {
+                    tieneNumeros = true;
+                    break;
+                }
+            }
 
-			//validar que tenga al menos un apellido
-			if (string.IsNullOrWhiteSpace(apellido))
-			{
-				MostrarError("Debe incluir al menos un apellido");
-				return;
-			}
+            if (tieneNumeros)
+            {
+                MostrarError("El nombre no puede contener números");
+                return;
+            }
 
-			//pasar fecha
-			DateTime fechaNac;
-			if (!DateTime.TryParse(fechaInput.Text, out fechaNac))
-			{
-				MostrarError("Formato de fecha inválido.\nUse: dd/MM/yyyy\nEjemplo: 15/05/1990");
-				return;
-			}
+            //separar nombre del apellido
+            string[] nombreCompleto = nombreInput.Text.Trim().Split(' ');
+            string nombre = nombreCompleto[0];
+            string apellido = nombreCompleto.Length > 1 ? string.Join(" ", nombreCompleto[1..]) : "";
 
-			//validar que la fecha no sea futura
-			if (fechaNac > DateTime.Today)
-			{
-				MostrarError("La fecha de nacimiento no puede ser futura");
-				return;
-			}
+            //validar que tenga al menos un apellido
+            if (string.IsNullOrWhiteSpace(apellido))
+            {
+                MostrarError("Debe incluir al menos un apellido");
+                return;
+            }
+            DateTime fechaNac;
+            if (!DateTime.TryParse(fechaInput.Text, out fechaNac))
+            {
+                MostrarError("Formato de fecha inválido.\nUse: dd/MM/yyyy\nEjemplo: 15/05/1990");
+                return;
+            }
+            if (fechaNac > DateTime.Today)
+            {
+                MostrarError("La fecha de nacimiento no puede ser futura");
+                return;
+            }
 
-			int edad;
-			if (!int.TryParse(edadInput.Text, out edad))
-			{
-				MostrarError("La edad debe ser un número válido");
-				return;
-			}
+            int edad;
+            if (!int.TryParse(edadInput.Text, out edad))
+            {
+                MostrarError("La edad debe ser un número válido");
+                return;
+            }
 
-			if (edad < 0 || edad > 150)
-			{
-				MostrarError("La edad debe estar entre 0 y 150 años");
-				return;
-			}
+            if (edad < 0 || edad > 150)
+            {
+                MostrarError("La edad debe estar entre 0 y 150 años");
+                return;
+            }
 
-			//validar que la edad calce con la fecha de nacimiento
-			int edadCalculada = DateTime.Today.Year - fechaNac.Year;
-			if (fechaNac.Date > DateTime.Today.AddYears(-edadCalculada))
-				edadCalculada--;
+            int edadCalculada = DateTime.Today.Year - fechaNac.Year;
+            if (fechaNac.Date > DateTime.Today.AddYears(-edadCalculada))
+                edadCalculada--;
 
-			if (edad > edadCalculada)
-			{
-				MostrarError($"La edad no coincide con la fecha de nacimiento.\nEdad calculada: {edadCalculada} años");
-				return;
-			}
+            if (edad > edadCalculada)
+            {
+                MostrarError($"La edad no coincide con la fecha de nacimiento.\nEdad calculada: {edadCalculada} años");
+                return;
+            }
 
-			//validar fecha de fallecimiento si esta muerto
-			DateTime? fechaFallecimiento = null;
-			if (muertoCheck.ButtonPressed)
-			{
-				DateTime fechaFall;
-				if (!DateTime.TryParse(fechaFallecimientoInput.Text, out fechaFall))
-				{
-					MostrarError("Formato de fecha de fallecimiento inválido.\nUse: dd/MM/yyyy");
-					return;
-				}
+            DateTime? fechaFallecimiento = null;
+            if (muertoCheck.ButtonPressed)
+            {
+                DateTime fechaFall;
+                if (!DateTime.TryParse(fechaFallecimientoInput.Text, out fechaFall))
+                {
+                    MostrarError("Formato de fecha de fallecimiento inválido.\nUse: dd/MM/yyyy");
+                    return;
+                }
 
-				if (fechaFall <= fechaNac)
-				{
-					MostrarError("La fecha de fallecimiento debe ser posterior a la fecha de nacimiento");
-					return;
-				}
+                if (fechaFall <= fechaNac)
+                {
+                    MostrarError("La fecha de fallecimiento debe ser posterior a la fecha de nacimiento");
+                    return;
+                }
 
-				fechaFallecimiento = fechaFall;
-			}
+                fechaFallecimiento = fechaFall;
+            }
 
-			//convertir coordenadas de texto a numeros
-			double latitud;
-			if (!double.TryParse(coordYInput.Text, out latitud))
-			{
-				MostrarError("La coordenada Y (latitud) debe ser un número");
-				return;
-			}
+            //convertir coordenadas de texto a numeros
+            double latitud;
+            if (!double.TryParse(coordYInput.Text, out latitud))
+            {
+                MostrarError("La coordenada Y (latitud) debe ser un número");
+                return;
+            }
 
-			double longitud;
-			if (!double.TryParse(coordXInput.Text, out longitud))
-			{
-				MostrarError("La coordenada X (longitud) debe ser un número");
-				return;
-			}
+            double longitud;
+            if (!double.TryParse(coordXInput.Text, out longitud))
+            {
+                MostrarError("La coordenada X (longitud) debe ser un número");
+                return;
+            }
 
-			//crear nueva persona con los datos
-			Persona nuevaPersona = new Persona(
-				nombre,
-				apellido,
-				cedulaInput.Text,
-				fechaNac,
-				edad,
-				latitud,
-				longitud,
-				"", //¿ciudad?
-				"", //¿pais?
-				""  //fotita
-			);
+            Persona nuevaPersona = new Persona(
+                nombre,
+                apellido,
+                cedulaInput.Text,
+                fechaNac,
+                edad,
+                latitud,
+                longitud,
+                "", //¿ciudad?
+                "", //¿pais?
+                ""  //fotita
+            );
 
-			//configurar estado y fecha de fallecimiento
-			nuevaPersona.EstaVivo = vivoCheck.ButtonPressed;
-			if (fechaFallecimiento.HasValue)
-			{
-				nuevaPersona.FechaFallecimiento = fechaFallecimiento;
-			}
+            //configurar estado y fecha de fallecimiento
+            nuevaPersona.EstaVivo = vivoCheck.ButtonPressed;
+            if (fechaFallecimiento.HasValue)
+            {
+                nuevaPersona.FechaFallecimiento = fechaFallecimiento;
+            }
 
-			//configurar genero ANTES de agregar a la lista
-			switch (opcionesGenero.Selected)
-			{
-				case 0: nuevaPersona.GeneroPersona = Persona.Genero.NoEspecificado; break;
-				case 1: nuevaPersona.GeneroPersona = Persona.Genero.Masculino; break;
-				case 2: nuevaPersona.GeneroPersona = Persona.Genero.Femenino; break;
-				case 3: nuevaPersona.GeneroPersona = Persona.Genero.Otro; break;
-			}
+            //configurar genero antes de agregar a la lista
+            if (opcionesGenero.Selected == 0)
+            {
+                nuevaPersona.GeneroPersona = Persona.Genero.NoEspecificado;
+            }
+            else if (opcionesGenero.Selected == 1)
+            {
+                nuevaPersona.GeneroPersona = Persona.Genero.Masculino;
+            }
+            else if (opcionesGenero.Selected == 2)
+            {
+                nuevaPersona.GeneroPersona = Persona.Genero.Femenino;
+            }
+            else if (opcionesGenero.Selected == 3)
+            {
+                nuevaPersona.GeneroPersona = Persona.Genero.Otro;
+            }
 
-			//verificar que la persona sea valida
-			if (!nuevaPersona.EsValido())
-			{
-				var errores = nuevaPersona.ObtenerErroresValidacion();
-				MostrarError(string.Join("\n", errores));
-				return;
-			}
-			
-			//agregar cedula a la lista de existentes
-			cedulasExistentes.Add(cedulaInput.Text);
+            if (!nuevaPersona.EsValido())
+            {
+                var errores = nuevaPersona.ObtenerErroresValidacion();
+                MostrarError(string.Join("\n", errores));
+                return;
+            }
 
-			//agregar persona a la lista global
-			personasCreadas.Add(nuevaPersona);
+            cedulasExistentes.Add(cedulaInput.Text);
+            personasCreadas.Add(nuevaPersona);
 
-			//establecer relaciones familiares
-			EstablecerPadres(nuevaPersona);
+            //filtrar por género
+            if (nuevaPersona.GeneroPersona == Persona.Genero.Masculino)
+                hombres.Add(nuevaPersona);
+            else if (nuevaPersona.GeneroPersona == Persona.Genero.Femenino)
+                mujeres.Add(nuevaPersona);
 
-			// Agregar al arbol y mostrar en consola
-			visualizador.AgregarPersonaYMostrar(nuevaPersona);
+            //establecer relaciones familiares
+            if (tipoDePersona.Selected == 0)
+            {
+                EstablecerPadres(nuevaPersona);
+            }
+            else
+            {
+                EstablecerConyuge(nuevaPersona);
+            }
 
-			//actualizar listas SOLO si se agregó alguien masculino o femenino
-			if (nuevaPersona.GeneroPersona == Persona.Genero.Masculino ||
-				nuevaPersona.GeneroPersona == Persona.Genero.Femenino)
-			{
-				ActualizarListaPadres();
-			}
+            // Agregar al arbol y mostrar en consola
+            visualizador.AgregarPersonaYMostrar(nuevaPersona);
 
-			GD.Print($"✓ {nuevaPersona.NombreCompleto} agregado al árbol genealógico");
-			GD.Print($"Género: {nuevaPersona.GeneroPersona}");
-			GD.Print($"Total personas: {personasCreadas.Count}");
+            //actualizar listas si se agregó alguien masculino o femenino
+            if (nuevaPersona.GeneroPersona == Persona.Genero.Masculino ||
+                nuevaPersona.GeneroPersona == Persona.Genero.Femenino)
+            {
+                ActualizarTodasLasListas();
+            }
 
-			visualizador.MostrarResumen();
-			
-			LimpiarCampos();
-		}
-		catch (Exception ex)
-		{
-			MostrarError($"Error inesperado:\n{ex.Message}");
-		}
-	}
+            GD.Print($"✓ {nuevaPersona.NombreCompleto} agregado al árbol genealógico");
+            GD.Print($"Género: {nuevaPersona.GeneroPersona}");
+            GD.Print($"Total personas: {personasCreadas.Count}");
 
-	private void OnVivoPressed()
-	{
-		if (vivoCheck.ButtonPressed)
-		{
-			muertoCheck.ButtonPressed = false;
-			label11.Visible = false;
-			fechaFallecimientoInput.Visible = false;
-		}
-	}
+            visualizador.MostrarResumen();
 
-	private void OnMuertoPressed()
-	{
-		if (muertoCheck.ButtonPressed)
-		{
-			vivoCheck.ButtonPressed = false;
-			label11.Visible = true;
-			fechaFallecimientoInput.Visible = true;
-		}
-	}
+            LimpiarCampos();
+        }
+        catch (Exception ex)
+        {
+            MostrarError($"Error inesperado:\n{ex.Message}");
+        }
+    }
 
-	private void OnCancelarPressed()
-	{
-		LimpiarCampos();
-	}
+    private void OnVivoPressed()
+    {
+        if (vivoCheck.ButtonPressed)
+        {
+            muertoCheck.ButtonPressed = false;
+            label11.Visible = false;
+            fechaFallecimientoInput.Visible = false;
+        }
+    }
 
-	private void LimpiarCampos()
-	{
-		nombreInput.Text = "";
-		cedulaInput.Text = "";
-		coordXInput.Text = "";
-		coordYInput.Text = "";
-		fechaInput.Text = "";
-		edadInput.Text = "";
-		fechaFallecimientoInput.Text = "";
+    private void OnMuertoPressed()
+    {
+        if (muertoCheck.ButtonPressed)
+        {
+            vivoCheck.ButtonPressed = false;
+            label11.Visible = true;
+            fechaFallecimientoInput.Visible = true;
+        }
+    }
 
-		//resetear opciones
-		opcionesGenero.Selected = 0;
-		opcionesPadre.Selected = 0;
-		opcionesMadre.Selected = 0;
+    private void OnTipoPersonaChanged(long index)
+    {
+        ConfigurarVisibilidadCampos();
+        ActualizarListaConyuges();
+    }
 
-		//resetear a vivo por defecto
-		vivoCheck.ButtonPressed = true;
-		muertoCheck.ButtonPressed = false;
-		label11.Visible = false;
-		fechaFallecimientoInput.Visible = false;
-	}
+    private void OnGeneroChanged(long index)
+    {
+        ActualizarListaConyuges();
+    }
 
-	private void MostrarError(string mensaje)
-	{
-		dialogoError.DialogText = mensaje;
-		dialogoError.PopupCentered();
-		GD.PrintErr($"Error: {mensaje}");
-	}
+    private void ConfigurarVisibilidadCampos()
+    {
+        bool esFamiliar = tipoDePersona.Selected == 0; //0 es familiar y 1 es el cónyugue
 
-	private void ActualizarListaPadres()
-	{
-		//limpiar listas actuales
-		opcionesPadre.Clear();
-		opcionesMadre.Clear();
+        //mostrar u ocultar campos de padres
+        label12.Visible = esFamiliar;
+        opcionesMadre.Visible = esFamiliar;
+        label13.Visible = esFamiliar;
+        opcionesPadre.Visible = esFamiliar;
 
-		opcionesPadre.AddItem("(ninguno)");
-		opcionesMadre.AddItem("(ninguno)");
+        //mostrar u ocultar campos de cónyuge
+        label16.Visible = !esFamiliar;
+        conyugue.Visible = !esFamiliar;
+    }
 
-		//agregar personas existentes
-		foreach (var persona in personasCreadas)
-		{
-			string item = $"{persona.NombreCompleto} ({persona.Cedula})";
+    private void OnCancelarPressed()
+    {
+        LimpiarCampos();
+    }
 
-			//solo hombres pueden ser padres
-			if (persona.GeneroPersona == Persona.Genero.Masculino)
-			{
-				opcionesPadre.AddItem(item);
-			}
+    private void LimpiarCampos()
+    {
+        nombreInput.Text = "";
+        cedulaInput.Text = "";
+        coordXInput.Text = "";
+        coordYInput.Text = "";
+        fechaInput.Text = "";
+        edadInput.Text = "";
+        fechaFallecimientoInput.Text = "";
 
-			//solo mujeres pueden ser madres
-			if (persona.GeneroPersona == Persona.Genero.Femenino)
-			{
-				opcionesMadre.AddItem(item);
-			}
-		}
+        opcionesGenero.Selected = 0;
+        opcionesPadre.Selected = 0;
+        opcionesMadre.Selected = 0;
+        conyugue.Selected = 0;
+        tipoDePersona.Selected = 0;
 
-		opcionesPadre.Selected = 0;
-		opcionesMadre.Selected = 0;
-	}
+        vivoCheck.ButtonPressed = true;
+        muertoCheck.ButtonPressed = false;
+        label11.Visible = false;
+        fechaFallecimientoInput.Visible = false;
 
-	private void EstablecerPadres(Persona nuevaPersona)
-	{
-		Persona padre = null;
-		Persona madre = null;
+        ConfigurarVisibilidadCampos();
+    }
 
-		//buscar padre seleccionado
-		if (opcionesPadre.Selected > 0)
-		{
-			int indicePadre = 0;
-			foreach (var persona in personasCreadas)
-			{
-				if (persona.GeneroPersona == Persona.Genero.Masculino)
-				{
-					indicePadre++;
-					if (indicePadre == opcionesPadre.Selected)
-					{
-						padre = persona;
-						break;
-					}
-				}
-			}
-		}
+    private void MostrarError(string mensaje)
+    {
+        dialogoError.DialogText = mensaje;
+        dialogoError.PopupCentered();
+        GD.PrintErr($"Error: {mensaje}");
+    }
 
-		//buscar madre seleccionada
-		if (opcionesMadre.Selected > 0)
-		{
-			int indiceMadre = 0;
-			foreach (var persona in personasCreadas)
-			{
-				if (persona.GeneroPersona == Persona.Genero.Femenino)
-				{
-					indiceMadre++;
-					if (indiceMadre == opcionesMadre.Selected)
-					{
-						madre = persona;
-						break;
-					}
-				}
-			}
-		}
+    private void ActualizarTodasLasListas()
+    {
+        ActualizarListaPadres();
+        ActualizarListaConyuges();
+    }
 
-		//establecer las relaciones
-		if (padre != null || madre != null)
-		{
-			nuevaPersona.EstablecerPadres(padre, madre);
-		}
-	}
+    private void ActualizarListaPadres()
+    {
+        opcionesPadre.Clear();
+        opcionesMadre.Clear();
 
-	public static Arbol ObtenerArbol()
-	{
-		return visualizador.ObtenerArbol();
-	}
+        opcionesPadre.AddItem("(ninguno)");
+        opcionesMadre.AddItem("(ninguno)");
+
+        //usar listas filtradas
+        foreach (var hombre in hombres)
+        {
+            opcionesPadre.AddItem($"{hombre.NombreCompleto} ({hombre.Cedula})");
+        }
+
+        foreach (var mujer in mujeres)
+        {
+            opcionesMadre.AddItem($"{mujer.NombreCompleto} ({mujer.Cedula})");
+        }
+
+        opcionesPadre.Selected = 0;
+        opcionesMadre.Selected = 0;
+    }
+
+    private void ActualizarListaConyuges()
+    {
+        conyugue.Clear();
+        conyugue.AddItem("(ninguno)");
+
+        //obtener lista según género seleccionado
+        List<Persona> personasDisponibles = ObtenerPersonasParaConyuge();
+
+        //agregar personas disponibles
+        foreach (var persona in personasDisponibles)
+        {
+            conyugue.AddItem($"{persona.NombreCompleto} ({persona.Cedula})");
+        }
+
+        conyugue.Selected = 0;
+    }
+
+    private List<Persona> ObtenerPersonasParaConyuge()
+    {
+        int generoSeleccionado = opcionesGenero.Selected;
+
+        if (generoSeleccionado == 1)
+        {
+            return mujeres;
+        }
+        else if (generoSeleccionado == 2)
+        {
+            return hombres;
+        }
+        else
+        {
+            return personasCreadas;
+        }
+    }
+
+    private void EstablecerPadres(Persona nuevaPersona)
+    {
+        Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
+        Persona madre = BuscarPersonaEnLista(mujeres, opcionesMadre.Selected);
+
+        if (padre != null || madre != null)
+        {
+            nuevaPersona.EstablecerPadres(padre, madre);
+        }
+    }
+
+    private void EstablecerConyuge(Persona nuevaPersona)
+    {
+        if (conyugue.Selected > 0)
+        {
+            List<Persona> personasDisponibles = ObtenerPersonasParaConyuge();
+            Persona conyugeSeleccionado = BuscarPersonaEnLista(personasDisponibles, conyugue.Selected);
+
+            if (conyugeSeleccionado != null)
+            {
+                //relación bidireccional de cónyuge
+                nuevaPersona.Conyuge = conyugeSeleccionado;
+                conyugeSeleccionado.Conyuge = nuevaPersona;
+            }
+        }
+    }
+
+    private Persona BuscarPersonaEnLista(List<Persona> lista, int indiceSeleccionado)
+    {
+        if (indiceSeleccionado <= 0 || indiceSeleccionado > lista.Count)
+            return null;
+
+        return lista[indiceSeleccionado - 1]; //-1 porque el índice 0 es "(ninguno)"
+    }
+
+    public static Arbol ObtenerArbol()
+    {
+        return visualizador.ObtenerArbol();
+    }
 }

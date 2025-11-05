@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|c:\\users\\50686\\documents\\arbol\\arbol-genealogico\\scripts\\agregarpersona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|solutionrelative:scripts\\agregarpersona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\UI\\AgregarPersona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:scripts\\UI\\AgregarPersona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|c:\\users\\50686\\documents\\arbol\\arbol-genealogico\\scripts\\persona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|solutionrelative:scripts\\persona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|c:\\users\\50686\\documents\\arbol\\arbol-genealogico\\scripts\\testpersona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|solutionrelative:scripts\\testpersona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|c:\\users\\50686\\documents\\arbol\\arbol-genealogico\\scripts\\models\\persona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2205836-DDC5-4632-A0FB-0624223E8410}|Arbol-Genealogico.csproj|solutionrelative:scripts\\models\\persona.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AgregarPersona.cs",
-              "DocumentMoniker": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\AgregarPersona.cs",
-              "RelativeDocumentMoniker": "scripts\\AgregarPersona.cs",
-              "ToolTip": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\AgregarPersona.cs",
-              "RelativeToolTip": "scripts\\AgregarPersona.cs",
-              "ViewState": "AgIAAAgBAAAAAAAAAAAYwAsBAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-01T21:49:02.051Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "testPersona.cs",
-              "DocumentMoniker": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\testPersona.cs",
-              "RelativeDocumentMoniker": "scripts\\testPersona.cs",
-              "ToolTip": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\testPersona.cs",
-              "RelativeToolTip": "scripts\\testPersona.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAnwDQAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-01T21:18:27.998Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Persona.cs",
-              "DocumentMoniker": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\Persona.cs",
-              "RelativeDocumentMoniker": "scripts\\Persona.cs",
-              "ToolTip": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\Persona.cs",
-              "RelativeToolTip": "scripts\\Persona.cs",
-              "ViewState": "AgIAAAIBAAAAAAAAAAAQwBsBAAAAAAAAAAAAAA==",
+              "DocumentMoniker": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\Models\\Persona.cs",
+              "RelativeDocumentMoniker": "scripts\\Models\\Persona.cs",
+              "ToolTip": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\Models\\Persona.cs",
+              "RelativeToolTip": "scripts\\Models\\Persona.cs",
+              "ViewState": "AgIAAOoAAAAAAAAAAAAYwAQBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-01T21:18:23.208Z",
+              "WhenOpened": "2025-11-05T04:40:27.333Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AgregarPersona.cs",
+              "DocumentMoniker": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\UI\\AgregarPersona.cs",
+              "RelativeDocumentMoniker": "scripts\\UI\\AgregarPersona.cs",
+              "ToolTip": "C:\\Users\\50686\\Documents\\Arbol\\Arbol-Genealogico\\scripts\\UI\\AgregarPersona.cs",
+              "RelativeToolTip": "scripts\\UI\\AgregarPersona.cs",
+              "ViewState": "AgIAANIBAAAAAAAAAAAAAO4BAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-05T04:39:41.776Z",
               "EditorCaption": ""
             }
           ]
