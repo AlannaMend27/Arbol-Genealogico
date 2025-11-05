@@ -127,6 +127,24 @@ public partial class AgregarPersona : Node2D
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(cedulaInput.Text))
+            {
+                MostrarError("La cédula es requerida");
+                return;
+            }
+
+            // Validar que si es Cónyuge, debe seleccionar a alguien
+            if (tipoDePersona.Selected == 1) // 1 = Cónyuge
+            {
+                if (conyugue.Selected == 0) // Si no hay conyuge seleccionado
+                {
+                    MostrarError("Debe seleccionar un cónyuge de la lista para agregar a esta persona.\n\n" +
+                    "Si no aparece ningún cónyuge disponible, primero debe agregar \n" +
+                    "al familiar con el cual desea establecer la relación conyugal.");
+                    return;
+                }
+            }
+
             bool tieneNumeros = false;
             foreach (char c in nombreInput.Text)
             {
@@ -222,6 +240,7 @@ public partial class AgregarPersona : Node2D
                 MostrarError("La coordenada X (longitud) debe ser un número");
                 return;
             }
+
 
             Persona nuevaPersona = new Persona(
                 nombre,
@@ -430,10 +449,13 @@ public partial class AgregarPersona : Node2D
         //obtener lista según género seleccionado
         List<Persona> personasDisponibles = ObtenerPersonasParaConyuge();
 
-        //agregar personas disponibles
+        //agregar solo personas que NO tienen cónyuge
         foreach (var persona in personasDisponibles)
         {
-            conyugue.AddItem($"{persona.NombreCompleto} ({persona.Cedula})");
+            if (persona.Conyuge == null)
+            {
+                conyugue.AddItem($"{persona.NombreCompleto} ({persona.Cedula})");
+            }
         }
 
         conyugue.Selected = 0;

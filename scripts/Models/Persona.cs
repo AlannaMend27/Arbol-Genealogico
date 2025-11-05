@@ -147,37 +147,6 @@ namespace ArbolGenealogico.scripts.Models
 			return hermanos;
 		}
 		
-		public List<Persona> ObtenerAbuelos()
-		{
-			var abuelos = new List<Persona>();
-			
-			if (Padre != null)
-			{
-				if (Padre.Padre != null) abuelos.Add(Padre.Padre);
-				if (Padre.Madre != null) abuelos.Add(Padre.Madre);
-			}
-			
-			if (Madre != null)
-			{
-				if (Madre.Padre != null) abuelos.Add(Madre.Padre);
-				if (Madre.Madre != null) abuelos.Add(Madre.Madre);
-			}
-			
-			return abuelos;
-		}
-		
-		public List<Persona> ObtenerNietos()
-		{
-			var nietos = new List<Persona>();
-			
-			foreach (var hijo in Hijos)
-			{
-				nietos.AddRange(hijo.Hijos);
-			}
-			
-			return nietos;
-		}
-		
 		// Métodos de ubicación y distancia
 		public double CalcularDistancia(Persona otraPersona)
 		{
