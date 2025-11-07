@@ -13,6 +13,7 @@ public partial class AgregarPersona : Node2D
 
     private static List<Persona> hombres = new List<Persona>();
     private static List<Persona> mujeres = new List<Persona>();
+    
 
     // Prueba para visualizar la construccion el arbol en consola (futura implementacion en interfaz)
     private static VisualizadorArbol visualizador = new VisualizadorArbol();
@@ -88,7 +89,6 @@ public partial class AgregarPersona : Node2D
         opcionesGenero.AddItem("No especificado");
         opcionesGenero.AddItem("Masculino");
         opcionesGenero.AddItem("Femenino");
-        opcionesGenero.AddItem("Otro");
         opcionesGenero.Selected = 0;
 
         tipoDePersona.AddItem("Familiar");
@@ -184,6 +184,13 @@ public partial class AgregarPersona : Node2D
                 return;
             }
 
+            //Verificar que se ingreso genero
+            if (opcionesGenero.Selected == 0)
+            {
+                MostrarError("Debe seleccionar un género");
+                return;
+            }
+
             int edad;
             if (!int.TryParse(edadInput.Text, out edad))
             {
@@ -197,6 +204,27 @@ public partial class AgregarPersona : Node2D
                 return;
             }
 
+            // Validad que la edad sea coherente con la de los padres (En caso de que la persona sea familiar)
+            if (tipoDePersona.Selected == 0)
+            {
+                Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
+                Persona madre = BuscarPersonaEnLista(mujeres, opcionesMadre.Selected);
+
+                if (padre != null && edad >= padre.Edad)
+                {
+                    MostrarError($"La edad ingresada ({edad} años) no puede ser mayor o igual que la del padre.\n" +
+                                $"{padre.NombreCompleto} tiene {padre.Edad} años.");
+                    return;
+                }
+
+                if (madre != null && edad >= madre.Edad)
+                {
+                    MostrarError($"Error: La edad ingresada ({edad} años) no puede ser mayor o igual que la de la madre.\n" +
+                                $"{madre.NombreCompleto} tiene {madre.Edad} años.");
+                    return;
+                }
+            }
+
             int edadCalculada = DateTime.Today.Year - fechaNac.Year;
             if (fechaNac.Date > DateTime.Today.AddYears(-edadCalculada))
                 edadCalculada--;
@@ -204,6 +232,12 @@ public partial class AgregarPersona : Node2D
             if (edad > edadCalculada)
             {
                 MostrarError($"La edad no coincide con la fecha de nacimiento.\nEdad calculada: {edadCalculada} años");
+                return;
+            }
+
+            //Verificar que ambos padres sean conyugues
+            if ( !VerificarPadresConyugues())
+            {
                 return;
             }
 
@@ -241,8 +275,12 @@ public partial class AgregarPersona : Node2D
                 return;
             }
 
+            //Crear la persona dependiendo de su tipo
+            Persona nuevaPersona;
 
-            Persona nuevaPersona = new Persona(
+            if (tipoDePersona.Selected == 1)
+            {
+                nuevaPersona = new Persona(
                 nombre,
                 apellido,
                 cedulaInput.Text,
@@ -250,10 +288,25 @@ public partial class AgregarPersona : Node2D
                 edad,
                 latitud,
                 longitud,
-                "", //¿ciudad?
-                "", //¿pais?
-                ""  //fotita
-            );
+                "", //foto
+                "conyugue"
+                );
+            }
+            else
+            {
+                nuevaPersona = new Persona(
+                nombre,
+                apellido,
+                cedulaInput.Text,
+                fechaNac,
+                edad,
+                latitud,
+                longitud,
+                "", //foto
+                "familiar"
+                );
+            }
+            
 
             //configurar estado y fecha de fallecimiento
             nuevaPersona.EstaVivo = vivoCheck.ButtonPressed;
@@ -262,22 +315,13 @@ public partial class AgregarPersona : Node2D
                 nuevaPersona.FechaFallecimiento = fechaFallecimiento;
             }
 
-            //configurar genero antes de agregar a la lista
-            if (opcionesGenero.Selected == 0)
-            {
-                nuevaPersona.GeneroPersona = Persona.Genero.NoEspecificado;
-            }
-            else if (opcionesGenero.Selected == 1)
+            if (opcionesGenero.Selected == 1)
             {
                 nuevaPersona.GeneroPersona = Persona.Genero.Masculino;
             }
             else if (opcionesGenero.Selected == 2)
             {
                 nuevaPersona.GeneroPersona = Persona.Genero.Femenino;
-            }
-            else if (opcionesGenero.Selected == 3)
-            {
-                nuevaPersona.GeneroPersona = Persona.Genero.Otro;
             }
 
             if (!nuevaPersona.EsValido())
@@ -479,6 +523,25 @@ public partial class AgregarPersona : Node2D
         }
     }
 
+    private Boolean VerificarPadresConyugues()
+    {
+        Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
+        Persona madre = BuscarPersonaEnLista(mujeres, opcionesMadre.Selected);
+
+        // Si ambos padres están seleccionados, validar que sean cónyuges
+        if (padre != null && madre != null)
+        {
+            if (padre.Conyuge != madre || madre.Conyuge != padre)
+            {
+                MostrarError("El padre y la madre seleccionados deben ser cónyuges entre sí.\n\n" +
+                            "Por favor, seleccione padres que estén casados o deje uno de los campos vacío.");
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
     private void EstablecerPadres(Persona nuevaPersona)
     {
         Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
@@ -492,18 +555,27 @@ public partial class AgregarPersona : Node2D
 
     private void EstablecerConyuge(Persona nuevaPersona)
     {
-        if (conyugue.Selected > 0)
-        {
-            List<Persona> personasDisponibles = ObtenerPersonasParaConyuge();
-            Persona conyugeSeleccionado = BuscarPersonaEnLista(personasDisponibles, conyugue.Selected);
+        string textoSeleccionado = conyugue.GetItemText(conyugue.Selected);
+        
+        int inicioParentesis = textoSeleccionado.LastIndexOf('(');
+        int finParentesis = textoSeleccionado.LastIndexOf(')');
 
-            if (conyugeSeleccionado != null)
-            {
-                //relación bidireccional de cónyuge
-                nuevaPersona.Conyuge = conyugeSeleccionado;
-                conyugeSeleccionado.Conyuge = nuevaPersona;
-            }
+        string cedulaConyugue = textoSeleccionado.Substring(
+            inicioParentesis + 1, 
+            finParentesis - inicioParentesis - 1
+        ).Trim();
+
+        // Encontrar conyugue por medio de lista que contiene a todas las personas creadas
+        Persona conyugeSeleccionado = personasCreadas.Find(p => p.Cedula == cedulaConyugue);
+
+        if (conyugeSeleccionado == null)
+        {
+            GD.PrintErr($"Error: No se encontró persona con cédula {cedulaConyugue}");
+            return;
         }
+
+        nuevaPersona.Conyuge = conyugeSeleccionado;
+        conyugeSeleccionado.Conyuge = nuevaPersona;
     }
 
     private Persona BuscarPersonaEnLista(List<Persona> lista, int indiceSeleccionado)

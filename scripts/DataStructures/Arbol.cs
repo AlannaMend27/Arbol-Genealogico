@@ -47,8 +47,15 @@ namespace ArbolGenealogico.scripts.DataStructures
 				return false;
 			}
 
-			// Calcular y asignar la generación correcta
-			ActualizarGeneracion(nuevaPersona);
+			//Agregar generacion correspondiente
+			if (nuevaPersona.TipoPersona == "familiar")
+			{
+				ActualizarGeneracion(nuevaPersona);
+			}
+            else
+            {
+                ActualizarGeneracionConyugue(nuevaPersona);
+            }
 
 			// Agregar al árbol
 			personasPorCedula[nuevaPersona.Cedula] = nuevaPersona;
@@ -75,20 +82,20 @@ namespace ArbolGenealogico.scripts.DataStructures
 			GD.Print($"Persona agregada: {nuevaPersona.NombreCompleto}");
 			return true;
 		}
-		
+
 		//Actualzar la generacion de la persona de acuerdo a sus padres
 		private void ActualizarGeneracion(Persona persona)
 		{
 			if (persona == null)
 				return;
-			
+
 			// Si no tiene padres, es fundador (generación 0)
 			if (persona.Padre == null && persona.Madre == null)
 			{
 				persona.Generacion = 0;
 				return;
 			}
-			
+
 			// Calcular generación basándose en los padres
 			int generacionPadre = persona.Padre?.Generacion ?? -1;
 			int generacionMadre = persona.Madre?.Generacion ?? -1;
@@ -96,6 +103,22 @@ namespace ArbolGenealogico.scripts.DataStructures
 			// La generación es la mayor de los padres + 1
 			persona.Generacion = Math.Max(generacionPadre, generacionMadre) + 1;
 		}	
+		
+		//Actualizar la generacion de la persona de acuerdo a su conyugue (para tipo de persona conyugue)
+		private void ActualizarGeneracionConyugue(Persona persona)
+        {
+			if (persona == null)
+			{
+				return;
+			}
+
+			if(persona.Conyuge == null)
+            {
+				return;
+            }
+
+			persona.Generacion = persona.Conyuge.Generacion; 
+        }
 		
 		// Buscar una persona por su cédula
 		public Persona BuscarPorCedula(string cedula)

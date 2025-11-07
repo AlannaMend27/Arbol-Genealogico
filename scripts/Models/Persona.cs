@@ -20,8 +20,6 @@ namespace ArbolGenealogico.scripts.Models
 		// Coordenadas de residencia
 		public double Latitud { get; set; }
 		public double Longitud { get; set; }
-		public string Ciudad { get; set; }
-		public string Pais { get; set; }
 		
 		// Relaciones familiares (estructura de árbol)
 		public Persona Padre { get; set; }
@@ -30,17 +28,21 @@ namespace ArbolGenealogico.scripts.Models
 		public Persona Conyuge { get; set; }
 		
 		// Información adicional
-		public enum Genero { Masculino, Femenino, Otro, NoEspecificado }
+		public enum Genero { Masculino, Femenino}
 		public Genero GeneroPersona { get; set; }
 
-		// Esta propiedad es util para saber cual es la medida del arbol
+		// util para calcular la altura del arbol
 		public int Generacion { get; set; }
+
+		// tipo de persona (familiar o conyugue)
+		public string TipoPersona { get; set; }
+
 
 		// Constructor de la clase pesona
 	
 		public Persona(string nombre, string apellido, string cedula, DateTime fechaNacimiento,
-					  int edad, double latitud, double longitud, string ciudad, string pais,
-					  string rutaFoto)
+					  int edad, double latitud, double longitud, string foto,
+					  string tipoPersona)
 		{
 			Nombre = nombre;
 			Apellido = apellido;
@@ -49,14 +51,13 @@ namespace ArbolGenealogico.scripts.Models
 			Edad = edad;
 			Latitud = latitud;
 			Longitud = longitud;
-			Ciudad = ciudad;
-			Pais = pais;
-			RutaFotografia = rutaFoto;
+			TipoPersona = tipoPersona;
+			RutaFotografia = foto;
 
 			// Inicalizar variables importantes
 			Hijos = new List<Persona>();
 			EstaVivo = true;
-			GeneroPersona = Genero.NoEspecificado;
+			GeneroPersona = Genero.Femenino;
 			Generacion = 0;
 		}
 		
@@ -222,7 +223,7 @@ namespace ArbolGenealogico.scripts.Models
 		// Métodos de información
 		public override string ToString()
 		{
-			return $"{NombreCompleto} ({Cedula}) - {Edad} años - {Ciudad}, {Pais}";
+			return $"{NombreCompleto} ({Cedula}) - {Edad} años";
 		}
 		
 	}
