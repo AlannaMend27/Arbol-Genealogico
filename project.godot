@@ -14,6 +14,11 @@ config/name="Arbol-Genealogico"
 run/main_scene="uid://btnlijche4ttx"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 
+[display]
+
+window/size/viewport_width=1500
+window/size/viewport_height=900
+
 [dotnet]
 
 project/assembly_name="Arbol-Genealogico"

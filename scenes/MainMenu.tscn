@@ -9,8 +9,8 @@
 script = ExtResource("2_0ykhv")
 
 [node name="MenuBackground" type="Sprite2D" parent="."]
-position = Vector2(571, 322.5)
-scale = Vector2(0.61249995, 0.62314814)
+position = Vector2(761.00006, 455)
+scale = Vector2(0.8399417, 0.8532407)
 texture = ExtResource("1_yqorp")
 
 [node name="Button" type="Button" parent="MenuBackground"]
@@ -32,12 +32,12 @@ theme_override_font_sizes/font_size = 27
 text = "Ver mapa"
 
 [node name="Label" type="Label" parent="."]
-offset_left = 349.0
-offset_top = 196.0
-offset_right = 817.0
-offset_bottom = 283.0
+offset_left = 517.0
+offset_top = 298.0
+offset_right = 985.0
+offset_bottom = 385.0
 theme_override_fonts/font = ExtResource("3_2wh52")
-theme_override_font_sizes/font_size = 57
+theme_override_font_sizes/font_size = 66
 text = "Arbol Genealogico"
 horizontal_alignment = 1
 vertical_alignment = 1
