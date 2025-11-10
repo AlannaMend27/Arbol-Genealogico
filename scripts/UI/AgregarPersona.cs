@@ -14,7 +14,7 @@ public partial class AgregarPersona : Node2D
 
     private static List<Persona> hombres = new List<Persona>();
     private static List<Persona> mujeres = new List<Persona>();
-    
+
 
     // Prueba para visualizar la construccion el arbol en consola (futura implementacion en interfaz)
     private static VisualizadorArbol visualizador = new VisualizadorArbol();
@@ -39,6 +39,11 @@ public partial class AgregarPersona : Node2D
     private OptionButton conyugue;
     private Button aceptarBtn;
     private Button cancelarBtn;
+    private Button cargarFotoBtn;
+    private LineEdit rutaFotoInput;
+    private FileDialog dialogoSeleccionarFoto;
+    private string rutaFotoSeleccionada = "";
+    private TextureRect previsualizacionFoto;
 
     private AcceptDialog dialogoError;
 
@@ -66,14 +71,36 @@ public partial class AgregarPersona : Node2D
         aceptarBtn = GetNode<Button>("aceptar");
         cancelarBtn = GetNode<Button>("cancelar");
 
+        // Intentar obtener los nodos de foto (si existen en la escena)
+        cargarFotoBtn = GetNodeOrNull<Button>("cargar_foto");
+        rutaFotoInput = GetNodeOrNull<LineEdit>("rutaFoto");
+        previsualizacionFoto = GetNodeOrNull<TextureRect>("previsualizacion_foto");
+
         dialogoError = new AcceptDialog();
         dialogoError.Title = "Error";
         dialogoError.OkButtonText = "Entendido";
         AddChild(dialogoError);
 
+        //crear el FileDialog
+        dialogoSeleccionarFoto = new FileDialog();
+        dialogoSeleccionarFoto.FileMode = FileDialog.FileModeEnum.OpenFile;
+        dialogoSeleccionarFoto.Filters = new string[] { "*.png ; Imágenes PNG", "*.jpg , *.jpeg ; Imágenes JPG" };
+        dialogoSeleccionarFoto.Title = "Seleccionar foto de la persona";
+        dialogoSeleccionarFoto.Access = FileDialog.AccessEnum.Filesystem;
+        dialogoSeleccionarFoto.UseNativeDialog = true;
+
+        AddChild(dialogoSeleccionarFoto);
+
         //conectar botones a sus funciones
         aceptarBtn.Pressed += OnAceptarPressed;
         cancelarBtn.Pressed += OnCancelarPressed;
+
+        if (cargarFotoBtn != null)
+        {
+            cargarFotoBtn.Pressed += OnCargarFotoPressed;
+        }
+
+        dialogoSeleccionarFoto.FileSelected += OnFotoSeleccionada;
 
         //conectar checkboxes
         vivoCheck.Pressed += OnVivoPressed;
@@ -98,61 +125,93 @@ public partial class AgregarPersona : Node2D
 
         ActualizarTodasLasListas();
         ConfigurarVisibilidadCampos();
-       CallDeferred(nameof(InicializarVisualizador));
-}
+        CallDeferred(nameof(InicializarVisualizador));
 
-private void InicializarVisualizador()
-{
-    GD.Print("\n=== Buscando VisualizadorArbolUI ===");
-    
-    // Intentar diferentes rutas
-    visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("../VisualizadorArbolUI");
-    
-    if (visualizadorUI == null)
-    {
-        visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("/root/Tree/VisualizadorArbolUI");
+        //se crea la carpeta para fotos si es que no existe
+        CrearCarpetaFotos();
     }
-    
-    if (visualizadorUI == null)
-    {
-        // Buscar en toda la escena
-        var root = GetTree().Root;
-        visualizadorUI = BuscarVisualizadorRecursivo(root);
-    }
-    
-    if (visualizadorUI == null)
-    {
-        GD.PrintErr("⚠ ERROR: No se encontró VisualizadorArbolUI en la escena");
-        GD.PrintErr("⚠ Asegúrate de que el nodo existe y tiene el script adjunto");
-    }
-    else
-    {
-        GD.Print("✓ VisualizadorArbolUI conectado correctamente");
-        GD.Print($"✓ Ruta del nodo: {visualizadorUI.GetPath()}");
-    }
-}
 
-private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
-{
-    if (nodo is VisualizadorArbolUI visualizador)
+    private void CrearCarpetaFotos()
     {
-        return visualizador;
+        string carpetaFotos = "res://fotos_personas";
+
+        if (!DirAccess.DirExistsAbsolute(carpetaFotos))
+        {
+            var dir = DirAccess.Open("res://");
+            if (dir != null)
+            {
+                var error = dir.MakeDir("fotos_personas");
+                if (error == Error.Ok)
+                {
+                    GD.Print("✓ Carpeta 'fotos_personas' creada exitosamente");
+                }
+                else
+                {
+                    GD.PrintErr($"Error al crear carpeta: {error}");
+                }
+            }
+        }
     }
-    
-    foreach (Node hijo in nodo.GetChildren())
+
+    private void InicializarVisualizador()
     {
-        var resultado = BuscarVisualizadorRecursivo(hijo);
-        if (resultado != null)
-            return resultado;
+        GD.Print("\n=== Buscando VisualizadorArbolUI ===");
+
+        // Intentar diferentes rutas
+        visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("../VisualizadorArbolUI");
+
+        if (visualizadorUI == null)
+        {
+            visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("/root/Tree/VisualizadorArbolUI");
+        }
+
+        if (visualizadorUI == null)
+        {
+            // Buscar en toda la escena
+            var root = GetTree().Root;
+            visualizadorUI = BuscarVisualizadorRecursivo(root);
+        }
+
+        if (visualizadorUI == null)
+        {
+            GD.PrintErr("⚠ ERROR: No se encontró VisualizadorArbolUI en la escena");
+            GD.PrintErr("⚠ Asegúrate de que el nodo existe y tiene el script adjunto");
+        }
+        else
+        {
+            GD.Print("✓ VisualizadorArbolUI conectado correctamente");
+            GD.Print($"✓ Ruta del nodo: {visualizadorUI.GetPath()}");
+        }
     }
-    
-    return null;
-}
+
+    private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
+    {
+        if (nodo is VisualizadorArbolUI visualizador)
+        {
+            return visualizador;
+        }
+
+        foreach (Node hijo in nodo.GetChildren())
+        {
+            var resultado = BuscarVisualizadorRecursivo(hijo);
+            if (resultado != null)
+                return resultado;
+        }
+
+        return null;
+    }
 
     private void OnAceptarPressed()
     {
         try
         {
+            //leer la ruta de la foto
+            if (rutaFotoInput != null && !string.IsNullOrWhiteSpace(rutaFotoInput.Text))
+            {
+                rutaFotoSeleccionada = rutaFotoInput.Text.Trim();
+                GD.Print($"📸 Ruta de foto ingresada manualmente: {rutaFotoSeleccionada}");
+            }
+
             if (string.IsNullOrWhiteSpace(nombreInput.Text))
             {
                 MostrarError("El nombre es requerido");
@@ -286,7 +345,7 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
             }
 
             //Verificar que ambos padres sean conyugues
-            if ( !VerificarPadresConyugues())
+            if (!VerificarPadresConyugues())
             {
                 return;
             }
@@ -325,6 +384,18 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
                 return;
             }
 
+            // Copiar la foto al proyecto si se seleccionó
+            string rutaFotoFinal = "";
+            if (!string.IsNullOrEmpty(rutaFotoSeleccionada))
+            {
+                rutaFotoFinal = CopiarFotoAlProyecto(rutaFotoSeleccionada, cedulaInput.Text);
+                if (string.IsNullOrEmpty(rutaFotoFinal))
+                {
+                    MostrarError("Error al copiar la foto. Verifique que el archivo existe y es una imagen válida.");
+                    return;
+                }
+            }
+
             //Crear la persona dependiendo de su tipo
             Persona nuevaPersona;
 
@@ -338,7 +409,7 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
                 edad,
                 latitud,
                 longitud,
-                "", //foto
+                rutaFotoFinal,
                 "conyugue"
                 );
             }
@@ -352,11 +423,11 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
                 edad,
                 latitud,
                 longitud,
-                "", //foto
+                rutaFotoFinal,
                 "familiar"
                 );
             }
-            
+
 
             //configurar estado y fecha de fallecimiento
             nuevaPersona.EstaVivo = vivoCheck.ButtonPressed;
@@ -425,6 +496,7 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
 
             GD.Print($"✓ {nuevaPersona.NombreCompleto} agregado al árbol genealógico");
             GD.Print($"Género: {nuevaPersona.GeneroPersona}");
+            GD.Print($"Foto: {nuevaPersona.RutaFotografia}");
             GD.Print($"Total personas: {personasCreadas.Count}");
 
             visualizador.MostrarResumen();
@@ -434,6 +506,50 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
         catch (Exception ex)
         {
             MostrarError($"Error inesperado:\n{ex.Message}");
+        }
+    }
+
+    private string CopiarFotoAlProyecto(string rutaOrigen, string cedula)
+    {
+        try
+        {
+            // Verificar que el archivo existe
+            if (!System.IO.File.Exists(rutaOrigen))
+            {
+                GD.PrintErr($"El archivo no existe: {rutaOrigen}");
+                return "";
+            }
+
+            // Obtener extensión del archivo
+            string extension = System.IO.Path.GetExtension(rutaOrigen).ToLower();
+
+            // Crear nombre único para la foto usando la cédula
+            string nombreArchivo = $"foto_{cedula}{extension}";
+
+            // Ruta dentro del proyecto
+            string carpetaDestino = ProjectSettings.GlobalizePath("res://fotos_personas");
+            string rutaDestino = System.IO.Path.Combine(carpetaDestino, nombreArchivo);
+
+            // Crear carpeta si no existe
+            if (!System.IO.Directory.Exists(carpetaDestino))
+            {
+                System.IO.Directory.CreateDirectory(carpetaDestino);
+            }
+
+            // Copiar archivo
+            System.IO.File.Copy(rutaOrigen, rutaDestino, true);
+
+            // Retornar ruta relativa para Godot
+            string rutaGodot = $"res://fotos_personas/{nombreArchivo}";
+
+            GD.Print($"✓ Foto copiada exitosamente a: {rutaGodot}");
+
+            return rutaGodot;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"Error al copiar foto: {ex.Message}");
+            return "";
         }
     }
 
@@ -497,6 +613,15 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
         fechaInput.Text = "";
         edadInput.Text = "";
         fechaFallecimientoInput.Text = "";
+
+        rutaFotoSeleccionada = "";
+        if (rutaFotoInput != null)
+            rutaFotoInput.Text = "";
+
+        if (previsualizacionFoto != null)
+        {
+            previsualizacionFoto.Texture = null;
+        }
 
         opcionesGenero.Selected = 0;
         opcionesPadre.Selected = 0;
@@ -591,7 +716,7 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
         Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
         Persona madre = BuscarPersonaEnLista(mujeres, opcionesMadre.Selected);
 
-        // Si ambos padres están seleccionados, validar que sean cónyuges
+        //si ambos padres están seleccionados, validar que sean cónyuges
         if (padre != null && madre != null)
         {
             if (padre.Conyuge != madre || madre.Conyuge != padre)
@@ -619,16 +744,16 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
     private void EstablecerConyuge(Persona nuevaPersona)
     {
         string textoSeleccionado = conyugue.GetItemText(conyugue.Selected);
-        
+
         int inicioParentesis = textoSeleccionado.LastIndexOf('(');
         int finParentesis = textoSeleccionado.LastIndexOf(')');
 
         string cedulaConyugue = textoSeleccionado.Substring(
-            inicioParentesis + 1, 
+            inicioParentesis + 1,
             finParentesis - inicioParentesis - 1
         ).Trim();
 
-        // Encontrar conyugue por medio de lista que contiene a todas las personas creadas
+        //encontrar conyugue por medio de lista que contiene a todas las personas creadas
         Persona conyugeSeleccionado = personasCreadas.Find(p => p.Cedula == cedulaConyugue);
 
         if (conyugeSeleccionado == null)
@@ -649,8 +774,55 @@ private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
         return lista[indiceSeleccionado - 1]; //-1 porque el índice 0 es "(ninguno)"
     }
 
-    public static Arbol ObtenerArbol()
+    private void OnCargarFotoPressed()
     {
-        return visualizador.ObtenerArbol();
+        if (dialogoSeleccionarFoto != null)
+        {
+            // Configurar la ruta inicial a la carpeta Downloads del usuario
+            string downloadsPath = System.IO.Path.Combine(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+                "Downloads"
+            );
+
+            // Verificar que la carpeta existe
+            if (System.IO.Directory.Exists(downloadsPath))
+            {
+                dialogoSeleccionarFoto.CurrentDir = downloadsPath;
+            }
+
+            dialogoSeleccionarFoto.PopupCentered();
+        }
+    }
+
+    private void OnFotoSeleccionada(string ruta)
+    {
+        GD.Print($"📸 Ruta recibida del FileDialog: {ruta}");
+
+        //la ruta ya viene como absoluta del sistema si se usa Access = Filesystem
+        rutaFotoSeleccionada = ruta;
+
+        if (rutaFotoInput != null)
+        {
+            rutaFotoInput.Text = System.IO.Path.GetFileName(rutaFotoSeleccionada);
+        }
+
+        // Mostrar previsualización si existe el nodo
+        if (previsualizacionFoto != null)
+        {
+            try
+            {
+                var image = Image.LoadFromFile(rutaFotoSeleccionada);
+                if (image != null)
+                {
+                    var texture = ImageTexture.CreateFromImage(image);
+                    previsualizacionFoto.Texture = texture;
+                    GD.Print("✓ Previsualización cargada");
+                }
+            }
+            catch (Exception ex)
+            {
+                GD.PrintErr($"Error al cargar previsualización: {ex.Message}");
+            }
+        }
     }
 }
