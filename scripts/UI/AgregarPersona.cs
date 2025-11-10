@@ -8,6 +8,7 @@ using ArbolGenealogico.scripts.UI;
 //FALTA VALIDAR NUMEROS PARA LAS COORDENADAS    
 public partial class AgregarPersona : Node2D
 {
+    private VisualizadorArbolUI visualizadorUI;
     private static List<string> cedulasExistentes = new List<string>();
     private static List<Persona> personasCreadas = new List<Persona>();
 
@@ -97,7 +98,56 @@ public partial class AgregarPersona : Node2D
 
         ActualizarTodasLasListas();
         ConfigurarVisibilidadCampos();
+       CallDeferred(nameof(InicializarVisualizador));
+}
+
+private void InicializarVisualizador()
+{
+    GD.Print("\n=== Buscando VisualizadorArbolUI ===");
+    
+    // Intentar diferentes rutas
+    visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("../VisualizadorArbolUI");
+    
+    if (visualizadorUI == null)
+    {
+        visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("/root/Tree/VisualizadorArbolUI");
     }
+    
+    if (visualizadorUI == null)
+    {
+        // Buscar en toda la escena
+        var root = GetTree().Root;
+        visualizadorUI = BuscarVisualizadorRecursivo(root);
+    }
+    
+    if (visualizadorUI == null)
+    {
+        GD.PrintErr("⚠ ERROR: No se encontró VisualizadorArbolUI en la escena");
+        GD.PrintErr("⚠ Asegúrate de que el nodo existe y tiene el script adjunto");
+    }
+    else
+    {
+        GD.Print("✓ VisualizadorArbolUI conectado correctamente");
+        GD.Print($"✓ Ruta del nodo: {visualizadorUI.GetPath()}");
+    }
+}
+
+private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
+{
+    if (nodo is VisualizadorArbolUI visualizador)
+    {
+        return visualizador;
+    }
+    
+    foreach (Node hijo in nodo.GetChildren())
+    {
+        var resultado = BuscarVisualizadorRecursivo(hijo);
+        if (resultado != null)
+            return resultado;
+    }
+    
+    return null;
+}
 
     private void OnAceptarPressed()
     {
@@ -352,6 +402,19 @@ public partial class AgregarPersona : Node2D
 
             // Agregar al arbol y mostrar en consola
             visualizador.AgregarPersonaYMostrar(nuevaPersona);
+
+            GD.Print("\n=== Intentando actualizar visualización ===");
+            if (visualizadorUI != null)
+            {
+                GD.Print("Llamando a ActualizarArbol...");
+                visualizadorUI.ActualizarArbol(visualizador.ObtenerArbol());
+                GD.Print("ActualizarArbol ejecutado");
+            }
+            else
+            {
+                GD.PrintErr("⚠ ERROR: No se puede actualizar - visualizadorUI es null");
+                GD.PrintErr("⚠ Verifica que VisualizadorArbolUI esté en la escena");
+            }
 
             //actualizar listas si se agregó alguien masculino o femenino
             if (nuevaPersona.GeneroPersona == Persona.Genero.Masculino ||
