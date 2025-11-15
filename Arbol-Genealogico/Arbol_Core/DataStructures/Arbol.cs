@@ -130,15 +130,6 @@ namespace Arbol_Core.DataStructures
 		{
 			return new List<Persona>(todasLasPersonas);
 		}
-
-		// Obtener los hermanos de una persona
-		public List<Persona> ObtenerHermanos(Persona persona)
-		{
-			if (persona == null)
-				return new List<Persona>();
-
-			return persona.ObtenerHermanos();
-		}
 		
 		// Obtener las personas fundadoras (generación 0)
 		public List<Persona> ObtenerPersonasFundadoras()

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Arbol.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6808b6a653b6b96b25abdab2763744369904f8a6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+32f5e0f193e78dbf6a3640615830ca3d4ca8bf7b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Arbol.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Arbol.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
