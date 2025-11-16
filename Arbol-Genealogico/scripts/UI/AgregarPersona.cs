@@ -46,6 +46,7 @@ public partial class AgregarPersona : Node2D
     private TextureRect previsualizacionFoto;
 
     private AcceptDialog dialogoError;
+    private Button volverBtn;
 
     public override void _Ready()
     {
@@ -70,6 +71,7 @@ public partial class AgregarPersona : Node2D
 
         aceptarBtn = GetNode<Button>("aceptar");
         cancelarBtn = GetNode<Button>("cancelar");
+        volverBtn = GetNodeOrNull<Button>("volver");
 
         // Intentar obtener los nodos de foto (si existen en la escena)
         cargarFotoBtn = GetNodeOrNull<Button>("cargar_foto");
@@ -98,6 +100,11 @@ public partial class AgregarPersona : Node2D
         if (cargarFotoBtn != null)
         {
             cargarFotoBtn.Pressed += OnCargarFotoPressed;
+        }
+
+        if (volverBtn != null)
+        {
+            volverBtn.Pressed += OnVolverPressed;
         }
 
         dialogoSeleccionarFoto.FileSelected += OnFotoSeleccionada;
@@ -474,6 +481,10 @@ public partial class AgregarPersona : Node2D
             // Agregar al arbol y mostrar en consola
             visualizador.AgregarPersonaYMostrar(nuevaPersona);
 
+            var grafo = Grafo.ObtenerInstancia();
+            grafo.AgregarNodo(nuevaPersona);
+            grafo.ConstruirAristas();
+
             GD.Print("\n=== Intentando actualizar visualización ===");
             if (visualizadorUI != null)
             {
@@ -602,6 +613,11 @@ public partial class AgregarPersona : Node2D
     private void OnCancelarPressed()
     {
         LimpiarCampos();
+    }
+
+    private void OnVolverPressed()
+    {
+        GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
     }
 
     private void LimpiarCampos()
