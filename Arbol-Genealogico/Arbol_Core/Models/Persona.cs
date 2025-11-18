@@ -148,34 +148,17 @@ namespace Arbol_Core.Models
 		}
 		
 		// Métodos de ubicación y distancia
-		public double CalcularDistancia(Persona otraPersona)
+		public double CalcularDistancia(Persona otra)
 		{
-			if (otraPersona == null)
-				return 0;
-				
-			return CalcularDistanciaEnMapa(
-				this.Latitud, this.Longitud,
-				otraPersona.Latitud, otraPersona.Longitud
-			);
-		}
+			if (otra == null || !TieneCoordenadasValidas() || !otra.TieneCoordenadasValidas())
+				return -1;
 
-		private double CalcularDistanciaEnMapa(double lat1, double lon1, double lat2, double lon2)
-		{
-			// Fórmula de Pitágoras para mapa plano
-			// Aproximación: 1 grado ≈ 111 km
-			double diferenciaLat = (lat2 - lat1) * 111;
-			double diferenciaLon = (lon2 - lon1) * 111;
+			double diferenciaLat = (otra.Latitud - this.Latitud) * 111;
+			double diferenciaLon = (otra.Longitud - this.Longitud) * 111 * Math.Cos((this.Latitud + otra.Latitud) / 2 * Math.PI / 180);
 			
 			double distancia = Math.Sqrt(diferenciaLat * diferenciaLat + diferenciaLon * diferenciaLon);
 			
-			return distancia;
-		}
-
-		
-		public bool TieneCoordenadasValidas()
-		{
-			return Latitud >= -90 && Latitud <= 90 &&
-				   Longitud >= -180 && Longitud <= 180;
+			return distancia; 
 		}
 		
 		// Validación de datos
@@ -187,7 +170,81 @@ namespace Arbol_Core.Models
 				   FechaNacimiento != default(DateTime) &&
 				   TieneCoordenadasValidas();
 		}
-		
+
+		// validaciones de coordenadas
+		public bool TieneCoordenadasValidas()
+		{
+
+		if (Latitud < -90 || Latitud > 90 || Longitud < -180 || Longitud > 180)
+			return false;
+
+		return EstaEnTierra();
+
+		}
+
+		private bool EstaEnTierra()
+		{
+
+			// oceanos interiores 
+
+			// Golfo de México
+			if (Latitud >= 18 && Latitud <= 31 && Longitud >= -98 && Longitud <= -81)
+				return false;
+
+			// Mar Caribe
+			if (Latitud >= 10 && Latitud <= 20 && Longitud >= -80 && Longitud <= -60)
+				return false;
+
+			// Mar Mediterráneo
+			if (Latitud >= 30 && Latitud <= 46 && Longitud >= 0 && Longitud <= 36)
+				return false;
+
+			// Mar Rojo
+			if (Latitud >= 10 && Latitud <= 30 && Longitud >= 32 && Longitud <= 44)
+				return false;
+
+			// Océano Índico central (entre África y Australia)
+			if (Latitud >= -10 && Latitud <= 10 && Longitud >= 52 && Longitud <= 113)
+				return false;
+
+			//continentes
+
+			// América del Norte
+			if (Latitud >= 15 && Latitud <= 72 && Longitud >= -168 && Longitud <= -52)
+				return true;
+
+			// América Central
+			if (Latitud >= 7 && Latitud <= 18 && Longitud >= -92 && Longitud <= -77)
+				return true;
+
+			// América del Sur
+			if (Latitud >= -56 && Latitud <= 13 && Longitud >= -81 && Longitud <= -34)
+				return true;
+
+			// Europa
+			if (Latitud >= 36 && Latitud <= 71 && Longitud >= -10 && Longitud <= 40)
+				return true;
+
+			// África
+			if (Latitud >= -35 && Latitud <= 37 && Longitud >= -18 && Longitud <= 52)
+				return true;
+
+			// Asia
+			if (Latitud >= -10 && Latitud <= 77 && Longitud >= 26 && Longitud <= 180)
+				return true;
+
+			// Oceanía
+			if (Latitud >= -47 && Latitud <= -10 && Longitud >= 113 && Longitud <= 179)
+				return true;
+
+			// Nueva Zelanda
+			if (Latitud >= -47 && Latitud <= -34 && Longitud >= 166 && Longitud <= 179)
+				return true;
+
+			// Está en agua
+			return false;
+		}
+			
 		public List<string> ObtenerErroresValidacion()
 		{
 			var errores = new List<string>();
