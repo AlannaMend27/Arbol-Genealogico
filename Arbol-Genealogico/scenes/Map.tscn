@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://budps3hcfrf3l"]
+[gd_scene load_steps=6 format=3 uid="uid://budps3hcfrf3l"]
 
 [ext_resource type="Texture2D" uid="uid://y82ci4pn1x2x" path="res://assets/Data_Square.jpg" id="1_lajc7"]
 [ext_resource type="Script" uid="uid://dccetatpb4wra" path="res://scripts/UI/MapaUI.cs" id="1_xkm8s"]
 [ext_resource type="Texture2D" uid="uid://cbi34chkmihkm" path="res://assets/Mapita.png" id="3_tm3qm"]
+[ext_resource type="FontFile" uid="uid://b1dp6nklx1sbd" path="res://assets/fonts/Soligant.otf" id="3_yyirk"]
+[ext_resource type="FontFile" uid="uid://c4dmg2lbe3wws" path="res://assets/fonts/Nexa-Heavy.ttf" id="4_41ykk"]
 
 [node name="Map" type="Node2D"]
 position = Vector2(213, 151)
@@ -25,60 +27,95 @@ offset_right = -47.0
 offset_bottom = 717.0
 text = "Volver"
 
-[node name="Label" type="Label" parent="."]
-offset_left = 1001.0
-offset_top = -111.0
-offset_right = 1233.0
-offset_bottom = -40.0
-theme_override_font_sizes/font_size = 24
-text = "Datos de "
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
+[node name="Titulo" type="Label" parent="."]
+offset_left = 989.0
+offset_top = -121.0
+offset_right = 1283.0
+offset_bottom = -73.0
+theme_override_colors/font_color = Color(0.40784314, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_yyirk")
+theme_override_font_sizes/font_size = 41
+text = "Mapa interactivo"
 
-[node name="nombre" type="Label" parent="."]
-offset_left = 1013.0
-offset_top = -15.0
-offset_right = 1225.0
-offset_bottom = 48.0
-metadata/_edit_use_anchors_ = true
+[node name="Descripcion" type="Label" parent="."]
+offset_left = 985.0
+offset_top = -68.0
+offset_right = 1258.0
+offset_bottom = 137.0
+theme_override_fonts/font = ExtResource("4_41ykk")
+theme_override_font_sizes/font_size = 14
+text = "Bienvenido al mapa interactivo, donde podrás ver a cada familiar ubicado en su lugar de residencia. Recuerda que al hacer clic en una foto se visualizarán la información y las distancias entre esa persona y el resto de familiares directamente en el mapa."
+horizontal_alignment = 3
+autowrap_mode = 2
 
-[node name="Label4" type="Label" parent="."]
-offset_left = 996.0
-offset_top = 281.0
-offset_right = 1228.0
-offset_bottom = 352.0
-theme_override_font_sizes/font_size = 24
-text = "Estadísticas"
+[node name="HSeparator" type="HSeparator" parent="."]
+offset_left = 986.0
+offset_top = 73.0
+offset_right = 1269.0
+offset_bottom = 145.0
+
+[node name="Estadisticas" type="Label" parent="."]
+offset_left = 1010.0
+offset_top = 107.0
+offset_right = 1242.0
+offset_bottom = 178.0
+theme_override_fonts/font = ExtResource("3_yyirk")
+theme_override_font_sizes/font_size = 29
+text = "Estadisticas"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="lejos" type="Label" parent="."]
-offset_left = 983.0
-offset_top = 435.0
-offset_right = 1155.0
-offset_bottom = 467.0
+offset_left = 1041.0
+offset_top = 201.0
+offset_right = 1213.0
+offset_bottom = 233.0
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="promedio" type="Label" parent="."]
-offset_left = 1011.0
-offset_top = 518.0
-offset_right = 1183.0
-offset_bottom = 550.0
+offset_left = 1029.0
+offset_top = 279.0
+offset_right = 1201.0
+offset_bottom = 311.0
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="cerca" type="Label" parent="."]
-offset_left = 1030.0
-offset_top = 631.0
-offset_right = 1202.0
-offset_bottom = 663.0
+offset_left = 1039.0
+offset_top = 358.0
+offset_right = 1211.0
+offset_bottom = 390.0
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="HSeparator2" type="HSeparator" parent="."]
+offset_left = 980.0
+offset_top = 440.0
+offset_right = 1270.0
+offset_bottom = 512.0
+
+[node name="Datos" type="Label" parent="."]
+offset_left = 983.0
+offset_top = 488.0
+offset_right = 1263.0
+offset_bottom = 559.0
+theme_override_fonts/font = ExtResource("3_yyirk")
+theme_override_font_sizes/font_size = 27
+text = "Informacion del familiar"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="nombre" type="Label" parent="."]
+offset_left = 1019.0
+offset_top = 538.0
+offset_right = 1231.0
+offset_bottom = 601.0
 metadata/_edit_use_anchors_ = true
 
 [node name="MapaTextureRect" type="TextureRect" parent="."]
