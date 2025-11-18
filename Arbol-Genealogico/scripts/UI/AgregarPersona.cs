@@ -16,7 +16,7 @@ public partial class AgregarPersona : Node2D
 	private static List<Persona> mujeres = new List<Persona>();
 
 
-	// Prueba para visualizar la construccion el arbol en consola (futura implementacion en interfaz)
+	// Prueba para visualizar la construccion el arbol en consola 
 	private static VisualizadorArbol visualizador = new VisualizadorArbol();
 
 	private LineEdit nombreInput;
@@ -134,6 +134,9 @@ public partial class AgregarPersona : Node2D
 		ConfigurarVisibilidadCampos();
 		CallDeferred(nameof(InicializarVisualizador));
 
+		// Actualiza el árbol cada vez que se entra a la escena
+		CallDeferred(nameof(ActualizarVisualizacionArbol));
+
 		//se crea la carpeta para fotos si es que no existe
 		CrearCarpetaFotos();
 	}
@@ -157,6 +160,15 @@ public partial class AgregarPersona : Node2D
 					GD.PrintErr($"Error al crear carpeta: {error}");
 				}
 			}
+		}
+	}
+
+	private void ActualizarVisualizacionArbol()
+	{
+		if (visualizadorUI != null && visualizador != null)
+		{
+			var arbolActual = visualizador.ObtenerArbol();
+			visualizadorUI.ActualizarArbol(arbolActual);
 		}
 	}
 

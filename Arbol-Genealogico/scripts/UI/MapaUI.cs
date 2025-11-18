@@ -213,8 +213,9 @@ void fragment() {
 
 		mapaTexture.AddChild(marcador);
 		marcadores[persona.Cedula] = marcador;
-	}
+		}
 
+		// muestra la informacion d ela persona en interfaz
 		private void MostrarInfoPersona(string cedula)
 		{
 			var persona = grafo.ObtenerPersona(cedula);
@@ -222,7 +223,7 @@ void fragment() {
 			
 			// Actualizar labels con la información
 			if (labelNombre != null)
-				labelNombre.Text = $" Nombre: {persona.NombreCompleto}";
+				labelNombre.Text = $" Nombre: {persona.Nombre}";
 			
 			if (labelCedula != null)
 				labelCedula.Text = $" Cedula: {persona.Cedula}";
@@ -233,7 +234,7 @@ void fragment() {
 			if (labelPadre != null)
 			{
 				if (persona.Padre != null)
-					labelPadre.Text = $" Padre: {persona.Padre.NombreCompleto}";
+					labelPadre.Text = $" Padre: {persona.Padre.Nombre}";
 				else
 					labelPadre.Text = " Padre: N/A";
 			}
@@ -241,7 +242,7 @@ void fragment() {
 			if (labelMadre != null)
 			{
 				if (persona.Madre != null)
-					labelMadre.Text = $" Madre: {persona.Madre.NombreCompleto}";
+					labelMadre.Text = $" Madre: {persona.Madre.Nombre}";
 				else
 					labelMadre.Text = " Madre: N/A";
 			}

@@ -69,7 +69,7 @@ offset_top = 234.0
 offset_right = 150.0
 offset_bottom = 265.0
 theme_override_fonts/font = ExtResource("3_qvbew")
-text = "Coordenada x"
+text = "Longitud"
 metadata/_edit_use_anchors_ = true
 
 [node name="cor-x" type="LineEdit" parent="."]
@@ -85,7 +85,7 @@ offset_top = 297.0
 offset_right = 151.0
 offset_bottom = 328.0
 theme_override_fonts/font = ExtResource("3_qvbew")
-text = "Coordenada y"
+text = "Latitud"
 metadata/_edit_use_anchors_ = true
 
 [node name="cor-y" type="LineEdit" parent="."]

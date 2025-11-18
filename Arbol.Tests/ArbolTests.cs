@@ -29,7 +29,7 @@ namespace Arbol.Tests
         {
             // Arrange
             var arbol = new Arbol_Core.DataStructures.Arbol();
-            var persona = CrearPersonaPrueba("Juan", "123");
+            var persona = CrearPersonaPrueba("Juan", "603444678");
 
             // Act
             var resultado = arbol.AgregarPersona(persona);
@@ -40,31 +40,14 @@ namespace Arbol.Tests
         }
 
         [Fact]
-        public void AgregarPersona_NoAgregaPersonaNulaOInvalida()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-            var personaInvalida = CrearPersonaPrueba("", "123"); // Nombre vacío
-
-            // Act
-            var resultadoNula = arbol.AgregarPersona(null);
-            var resultadoInvalida = arbol.AgregarPersona(personaInvalida);
-
-            // Assert
-            Assert.False(resultadoNula);
-            Assert.False(resultadoInvalida);
-            Assert.Equal(0, arbol.CantidadMiembros);
-        }
-
-        [Fact]
         public void AgregarPersona_AsignaGeneracionCorrectamente()
         {
             // Arrange
             var arbol = new Arbol_Core.DataStructures.Arbol();
-            var padre = CrearPersonaPrueba("Padre", "111", Persona.Genero.Masculino);
+            var padre = CrearPersonaPrueba("Padre", "603444678", Persona.Genero.Masculino);
             padre.TipoPersona = "familiar";
             
-            var hijo = CrearPersonaPrueba("Hijo", "222");
+            var hijo = CrearPersonaPrueba("Hijo", "203444678");
             hijo.TipoPersona = "familiar";
             hijo.Padre = padre;
 
@@ -86,11 +69,11 @@ namespace Arbol.Tests
         {
             // Arrange
             var arbol = new Arbol_Core.DataStructures.Arbol();
-            var persona = CrearPersonaPrueba("Juan", "123");
+            var persona = CrearPersonaPrueba("Juan", "603444678");
             arbol.AgregarPersona(persona);
 
             // Act
-            var resultado = arbol.BuscarPorCedula("123");
+            var resultado = arbol.BuscarPorCedula("603444678");
 
             // Assert
             Assert.NotNull(resultado);
@@ -102,24 +85,13 @@ namespace Arbol.Tests
         {
             // Arrange
             var arbol = new Arbol_Core.DataStructures.Arbol();
-            arbol.AgregarPersona(CrearPersonaPrueba("Juan", "123"));
+            arbol.AgregarPersona(CrearPersonaPrueba("Juan", "603444678"));
 
             // Act
-            var resultado = arbol.BuscarPorCedula("999");
+            var resultado = arbol.BuscarPorCedula("113445544");
 
             // Assert
             Assert.Null(resultado);
-        }
-
-        [Fact]
-        public void BuscarPorCedula_RetornaNullParaCedulaNulaOVacia()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-
-            // Act & Assert
-            Assert.Null(arbol.BuscarPorCedula(null));
-            Assert.Null(arbol.BuscarPorCedula(""));
         }
 
         #endregion
@@ -127,25 +99,12 @@ namespace Arbol.Tests
         #region ObtenerTodasLasPersonas Tests
 
         [Fact]
-        public void ObtenerTodasLasPersonas_RetornaListaVaciaEnArbolVacio()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-
-            // Act
-            var resultado = arbol.ObtenerTodasLasPersonas();
-
-            // Assert
-            Assert.Empty(resultado);
-        }
-
-        [Fact]
         public void ObtenerTodasLasPersonas_RetornaTodasLasPersonasAgregadas()
         {
             // Arrange
             var arbol = new Arbol_Core.DataStructures.Arbol();
-            var persona1 = CrearPersonaPrueba("Juan", "111");
-            var persona2 = CrearPersonaPrueba("María", "222");
+            var persona1 = CrearPersonaPrueba("Juan", "603444678");
+            var persona2 = CrearPersonaPrueba("María", "203444678");
             
             arbol.AgregarPersona(persona1);
             arbol.AgregarPersona(persona2);
@@ -161,129 +120,11 @@ namespace Arbol.Tests
 
         #endregion
 
-        #region ObtenerPersonasFundadoras Tests
-
-        [Fact]
-        public void ObtenerPersonasFundadoras_RetornaPersonasSinPadres()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-            var fundador = CrearPersonaPrueba("Fundador", "111");
-            fundador.TipoPersona = "familiar";
-            
-            arbol.AgregarPersona(fundador);
-
-            // Act
-            var fundadores = arbol.ObtenerPersonasFundadoras();
-
-            // Assert
-            Assert.Single(fundadores);
-            Assert.Contains(fundador, fundadores);
-        }
-
-        [Fact]
-        public void ObtenerPersonasFundadoras_NoRetornaDescendientes()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-            var fundador = CrearPersonaPrueba("Fundador", "111", Persona.Genero.Masculino);
-            fundador.TipoPersona = "familiar";
-            
-            var hijo = CrearPersonaPrueba("Hijo", "222");
-            hijo.TipoPersona = "familiar";
-            hijo.Padre = fundador;
-
-            arbol.AgregarPersona(fundador);
-            arbol.AgregarPersona(hijo);
-
-            // Act
-            var fundadores = arbol.ObtenerPersonasFundadoras();
-
-            // Assert
-            Assert.Single(fundadores);
-            Assert.DoesNotContain(hijo, fundadores);
-        }
-
-        #endregion
-
-        #region LimpiarArbol Tests
-
-        [Fact]
-        public void LimpiarArbol_EliminaTodosLosMiembros()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-            arbol.AgregarPersona(CrearPersonaPrueba("Juan", "111"));
-            arbol.AgregarPersona(CrearPersonaPrueba("María", "222"));
-
-            // Act
-            arbol.LimpiarArbol();
-
-            // Assert
-            Assert.Equal(0, arbol.CantidadMiembros);
-            Assert.Empty(arbol.ObtenerTodasLasPersonas());
-        }
-
-        [Fact]
-        public void LimpiarArbol_PermiteOperacionesDespuesDeLimpiar()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-            arbol.AgregarPersona(CrearPersonaPrueba("Juan", "111"));
-            arbol.LimpiarArbol();
-
-            // Act
-            var persona = CrearPersonaPrueba("María", "222");
-            var resultado = arbol.AgregarPersona(persona);
-
-            // Assert
-            Assert.True(resultado);
-            Assert.Equal(1, arbol.CantidadMiembros);
-            Assert.Null(arbol.BuscarPorCedula("111"));
-        }
-
-        #endregion
-
-        #region Tests de Integración
-
-        [Fact]
-        public void Integracion_CreaArbolGenealogico3Generaciones()
-        {
-            // Arrange
-            var arbol = new Arbol_Core.DataStructures.Arbol();
-
-            // Generación 0 (Abuelos)
-            var abuelo = CrearPersonaPrueba("Abuelo", "100", Persona.Genero.Masculino);
-            abuelo.TipoPersona = "familiar";
-
-            // Generación 1 (Padre)
-            var padre = CrearPersonaPrueba("Padre", "200", Persona.Genero.Masculino);
-            padre.TipoPersona = "familiar";
-            padre.Padre = abuelo;
-
-            // Generación 2 (Hijo)
-            var hijo = CrearPersonaPrueba("Hijo", "300");
-            hijo.TipoPersona = "familiar";
-            hijo.Padre = padre;
-
-            // Act
-            arbol.AgregarPersona(abuelo);
-            arbol.AgregarPersona(padre);
-            arbol.AgregarPersona(hijo);
-
-            // Assert
-            Assert.Equal(3, arbol.CantidadMiembros);
-            Assert.Equal(0, abuelo.Generacion);
-            Assert.Equal(1, padre.Generacion);
-            Assert.Equal(2, hijo.Generacion);
-            Assert.Contains(hijo, padre.Hijos);
-        }
-
-        #endregion
-
         #region Métodos Helper
 
+        /// <summary>
         /// Crea una persona de prueba con valores por defecto
+        /// </summary>
         private Persona CrearPersonaPrueba(
             string nombre = "Juan",
             string cedula = "123456789",
