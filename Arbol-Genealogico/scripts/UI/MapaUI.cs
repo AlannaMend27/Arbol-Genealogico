@@ -16,6 +16,15 @@ public partial class MapaUI : Node2D
 	private Grafo grafo;
 	private Button volverBtn;
 
+	// panel de datos personales
+	private Panel panelInfo;
+	private Label labelNombre;
+	private Label labelCedula;
+	private Label labelEdad;
+	private Label labelPadre;
+	private Label labelMadre;
+
+
 	// se guardan marcadores por cédula
 	private Dictionary<string, Control> marcadores = new Dictionary<string, Control>();
 
@@ -44,6 +53,20 @@ public partial class MapaUI : Node2D
 
 		ActualizarLabelsInfo();
 		ReconstruirMarcadores();
+
+		// paneles de datos
+		panelInfo = GetNodeOrNull<Panel>("PanelInfoPersona");
+		if (panelInfo != null)
+		{
+			labelNombre = panelInfo.GetNodeOrNull<Label>("VBoxContainer/nombre");
+			labelCedula = panelInfo.GetNodeOrNull<Label>("VBoxContainer/cedula");
+			labelEdad = panelInfo.GetNodeOrNull<Label>("VBoxContainer/edad");
+			labelPadre = panelInfo.GetNodeOrNull<Label>("VBoxContainer/padre");
+			labelMadre = panelInfo.GetNodeOrNull<Label>("VBoxContainer/madre");
+			
+			// Ocultar el panel al inicio
+			panelInfo.Visible = false;
+		}
 	}
 
 	private void ActualizarLabelsInfo()
@@ -192,6 +215,41 @@ void fragment() {
 		marcadores[persona.Cedula] = marcador;
 	}
 
+		private void MostrarInfoPersona(string cedula)
+		{
+			var persona = grafo.ObtenerPersona(cedula);
+			if (persona == null || panelInfo == null) return;
+			
+			// Actualizar labels con la información
+			if (labelNombre != null)
+				labelNombre.Text = $" Nombre: {persona.NombreCompleto}";
+			
+			if (labelCedula != null)
+				labelCedula.Text = $" Cedula: {persona.Cedula}";
+			
+			if (labelEdad != null)
+				labelEdad.Text = $" Edad: {persona.Edad} años";
+			
+			if (labelPadre != null)
+			{
+				if (persona.Padre != null)
+					labelPadre.Text = $" Padre: {persona.Padre.NombreCompleto}";
+				else
+					labelPadre.Text = " Padre: N/A";
+			}
+			
+			if (labelMadre != null)
+			{
+				if (persona.Madre != null)
+					labelMadre.Text = $" Madre: {persona.Madre.NombreCompleto}";
+				else
+					labelMadre.Text = " Madre: N/A";
+			}
+			
+			// Mostrar el panel
+			panelInfo.Visible = true;
+		}
+
 	//Convierte una coordenada geográfica a una posición en píxeles
 	private Vector2 MapearCoordenadaAPunto(Vector2 coord)
 	{
@@ -209,6 +267,8 @@ void fragment() {
 		if (!marcadores.ContainsKey(cedula)) return;
 
 		ClearDibujos();
+
+		MostrarInfoPersona(cedula);
 
 		var personaOrigen = grafo.ObtenerPersona(cedula);
 		if (personaOrigen == null) return;

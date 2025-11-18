@@ -205,6 +205,7 @@ namespace Arbol_Core.Models
 
 			// Océano Índico central (entre África y Australia)
 			if (Latitud >= -10 && Latitud <= 10 && Longitud >= 52 && Longitud <= 113)
+				return false;
 
 			//continentes
 
