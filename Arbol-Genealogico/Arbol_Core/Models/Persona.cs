@@ -148,29 +148,18 @@ namespace Arbol_Core.Models
 		}
 		
 		// Métodos de ubicación y distancia
-		public double CalcularDistancia(Persona otraPersona)
+		public double CalcularDistancia(Persona otra)
 		{
-			if (otraPersona == null)
-				return 0;
-				
-			return CalcularDistanciaEnMapa(
-				this.Latitud, this.Longitud,
-				otraPersona.Latitud, otraPersona.Longitud
-			);
-		}
+			if (otra == null || !TieneCoordenadasValidas() || !otra.TieneCoordenadasValidas())
+				return -1;
 
-		private double CalcularDistanciaEnMapa(double lat1, double lon1, double lat2, double lon2)
-		{
-			// Fórmula de Pitágoras para mapa plano
-			// Aproximación: 1 grado ≈ 111 km
-			double diferenciaLat = (lat2 - lat1) * 111;
-			double diferenciaLon = (lon2 - lon1) * 111;
+			double diferenciaLat = (otra.Latitud - this.Latitud) * 111;
+			double diferenciaLon = (otra.Longitud - this.Longitud) * 111 * Math.Cos((this.Latitud + otra.Latitud) / 2 * Math.PI / 180);
 			
 			double distancia = Math.Sqrt(diferenciaLat * diferenciaLat + diferenciaLon * diferenciaLon);
 			
-			return distancia;
+			return distancia; 
 		}
-
 		
 		public bool TieneCoordenadasValidas()
 		{

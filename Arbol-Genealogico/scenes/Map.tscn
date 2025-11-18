@@ -2,34 +2,34 @@
 
 [ext_resource type="Texture2D" uid="uid://y82ci4pn1x2x" path="res://assets/Data_Square.jpg" id="1_lajc7"]
 [ext_resource type="Script" uid="uid://dccetatpb4wra" path="res://scripts/UI/MapaUI.cs" id="1_xkm8s"]
-[ext_resource type="Texture2D" uid="uid://d1vntjlry4gp6" path="res://assets/map.png" id="2_xkm8s"]
+[ext_resource type="Texture2D" uid="uid://cbi34chkmihkm" path="res://assets/Mapita.png" id="3_tm3qm"]
 
 [node name="Map" type="Node2D"]
 position = Vector2(213, 151)
 script = ExtResource("1_xkm8s")
 
 [node name="DataSquare" type="Sprite2D" parent="."]
-position = Vector2(702.185, 298.75)
+position = Vector2(372.99997, 298.00003)
 scale = Vector2(1.4625, 0.63000697)
 texture = ExtResource("1_lajc7")
 
 [node name="DataSquare2" type="Sprite2D" parent="."]
-position = Vector2(-53.125008, 295.99997)
+position = Vector2(1127.0001, 298)
 scale = Vector2(0.4196875, 0.6549543)
 texture = ExtResource("1_lajc7")
 
 [node name="volver" type="Button" parent="."]
-offset_left = 1106.0
-offset_top = 629.0
-offset_right = 1225.0
-offset_bottom = 689.0
+offset_left = -166.0
+offset_top = 657.0
+offset_right = -47.0
+offset_bottom = 717.0
 text = "Volver"
 
 [node name="Label" type="Label" parent="."]
-offset_left = -168.0
-offset_top = -108.0
-offset_right = 64.0
-offset_bottom = -37.0
+offset_left = 1001.0
+offset_top = -111.0
+offset_right = 1233.0
+offset_bottom = -40.0
 theme_override_font_sizes/font_size = 24
 text = "Datos de "
 horizontal_alignment = 1
@@ -37,17 +37,17 @@ vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="nombre" type="Label" parent="."]
-offset_left = -158.0
-offset_top = 97.0
-offset_right = 54.0
-offset_bottom = 160.0
+offset_left = 1013.0
+offset_top = -15.0
+offset_right = 1225.0
+offset_bottom = 48.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Label4" type="Label" parent="."]
-offset_left = -157.0
-offset_top = 416.0
-offset_right = 75.0
-offset_bottom = 487.0
+offset_left = 996.0
+offset_top = 281.0
+offset_right = 1228.0
+offset_bottom = 352.0
 theme_override_font_sizes/font_size = 24
 text = "Estadísticas"
 horizontal_alignment = 1
@@ -55,39 +55,39 @@ vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="lejos" type="Label" parent="."]
-offset_left = -181.0
-offset_top = 495.0
-offset_right = -9.0
-offset_bottom = 527.0
+offset_left = 983.0
+offset_top = 435.0
+offset_right = 1155.0
+offset_bottom = 467.0
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="promedio" type="Label" parent="."]
-offset_left = -183.0
-offset_top = 658.0
-offset_right = -11.0
-offset_bottom = 690.0
+offset_left = 1011.0
+offset_top = 518.0
+offset_right = 1183.0
+offset_bottom = 550.0
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="cerca" type="Label" parent="."]
-offset_left = -183.0
-offset_top = 576.0
-offset_right = -11.0
-offset_bottom = 608.0
+offset_left = 1030.0
+offset_top = 631.0
+offset_right = 1202.0
+offset_bottom = 663.0
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="MapaTextureRect" type="TextureRect" parent="."]
-offset_left = 142.0
-offset_top = -98.0
-offset_right = 1235.0
-offset_bottom = 607.0
+offset_left = -205.0
+offset_top = -56.0
+offset_right = 947.0
+offset_bottom = 628.0
 
-[node name="Map" type="Sprite2D" parent="MapaTextureRect"]
-position = Vector2(553.49994, 366.4922)
-scale = Vector2(0.25556117, 0.40558243)
-texture = ExtResource("2_xkm8s")
+[node name="Mapita" type="Sprite2D" parent="MapaTextureRect"]
+position = Vector2(579.25, 328.5)
+scale = Vector2(0.31587496, 0.35708335)
+texture = ExtResource("3_tm3qm")
