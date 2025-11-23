@@ -101,28 +101,55 @@ text = "Estadisticas"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Lejanos" type="Label" parent="."]
+offset_left = 1202.0
+offset_top = 321.0
+offset_right = 1438.0
+offset_bottom = 344.0
+theme_override_fonts/font = ExtResource("4_41ykk")
+theme_override_font_sizes/font_size = 15
+text = "Par de familiares más lejanos:"
+
 [node name="lejos" type="Label" parent="."]
-offset_left = 1254.0
-offset_top = 352.0
-offset_right = 1426.0
-offset_bottom = 384.0
-horizontal_alignment = 1
+offset_left = 1203.0
+offset_top = 362.0
+offset_right = 1375.0
+offset_bottom = 394.0
+theme_override_fonts/font = ExtResource("4_41ykk")
 vertical_alignment = 1
+
+[node name="Promedio" type="Label" parent="."]
+offset_left = 1202.0
+offset_top = 421.0
+offset_right = 1490.0
+offset_bottom = 444.0
+theme_override_fonts/font = ExtResource("4_41ykk")
+theme_override_font_sizes/font_size = 15
+text = "Distancia promedio entre familiares:"
 
 [node name="promedio" type="Label" parent="."]
-offset_left = 1242.0
-offset_top = 430.0
-offset_right = 1414.0
-offset_bottom = 462.0
-horizontal_alignment = 1
+offset_left = 1203.0
+offset_top = 459.0
+offset_right = 1375.0
+offset_bottom = 491.0
+theme_override_fonts/font = ExtResource("4_41ykk")
 vertical_alignment = 1
 
+[node name="Cercanos" type="Label" parent="."]
+offset_left = 1203.0
+offset_top = 517.0
+offset_right = 1453.0
+offset_bottom = 540.0
+theme_override_fonts/font = ExtResource("4_41ykk")
+theme_override_font_sizes/font_size = 15
+text = "Par de familiares más cercanos:"
+
 [node name="cerca" type="Label" parent="."]
-offset_left = 1252.0
-offset_top = 509.0
-offset_right = 1424.0
-offset_bottom = 541.0
-horizontal_alignment = 1
+offset_left = 1206.0
+offset_top = 552.0
+offset_right = 1378.0
+offset_bottom = 584.0
+theme_override_fonts/font = ExtResource("4_41ykk")
 vertical_alignment = 1
 
 [node name="HSeparator2" type="HSeparator" parent="."]

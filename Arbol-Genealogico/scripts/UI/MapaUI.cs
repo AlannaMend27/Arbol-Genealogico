@@ -72,7 +72,7 @@ public partial class MapaUI : Node2D
 		
 		// Offset para centrar + ajuste manual hacia la izquierda
 		_panOffset = viewportCenter - mapCenter + baseOffset;
-		_panOffset.X = 100; // Mover 100px más a la izquierda
+		_panOffset.X = 200; // Mover 200px más a la izquierda
 		_initialPanOffset = _panOffset;
 		
 		GD.Print($"MapaTextureRect: Pos={mapaTexture.Position}, Size={mapaTexture.Size}");
@@ -331,15 +331,15 @@ public partial class MapaUI : Node2D
 
 		var labelDistancia = GetNodeOrNull<Label>("promedio");
 		if (labelDistancia != null)
-			labelDistancia.Text = $"Distancia promedio: {distancia}";
+			labelDistancia.Text = $"{distancia}";
 
 		var labelLejos = GetNodeOrNull<Label>("lejos");
 		if (labelLejos != null)
-			labelLejos.Text = lejos != string.Empty ? $"Más lejos: {lejos}" : "Más lejos: N/A";
+			labelLejos.Text = lejos != string.Empty ? $"{lejos}" : "N/A";
 
 		var labelCerca = GetNodeOrNull<Label>("cerca");
 		if (labelCerca != null)
-			labelCerca.Text = cerca != string.Empty ? $"Más cerca: {cerca}" : "Más cerca: N/A";
+			labelCerca.Text = cerca != string.Empty ? $"{cerca}" : "N/A";
 	}
 
 	public void ReconstruirMarcadores()
