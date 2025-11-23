@@ -374,6 +374,7 @@ public partial class MapaUI : Node2D
 
 		if (!string.IsNullOrEmpty(persona.RutaFotografia))
 		{
+			// Agregar la foto en la ruta que especifico el usuario
 			var textureRect = new TextureRect();
 			textureRect.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
 			textureRect.Position = Vector2.Zero;
@@ -415,6 +416,8 @@ void fragment() {
 				GD.PrintErr($"Error cargando foto {persona.RutaFotografia}: {ex.Message}");
 			}
 
+
+
 			if (fotoOk)
 			{
 				marcador.AddChild(textureRect);
@@ -431,12 +434,73 @@ void fragment() {
 		}
 		else
 		{
-			var label = new Label();
-			label.Text = persona.GeneroPersona == Persona.Genero.Masculino ? "🔵" : "🔴";
-			label.SetAnchorsPreset(Control.LayoutPreset.Center);
-			label.AddThemeFontSizeOverride("font_size", 32);
-			marcador.AddChild(label);
-			marcador.TooltipText = persona.NombreCompleto + "\n" + persona.Cedula;
+			// Agregar foto por default
+			var textureRect = new TextureRect();
+			textureRect.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+			textureRect.Position = Vector2.Zero;
+			textureRect.Size = new Vector2(MARCADOR_SIZE, MARCADOR_SIZE);
+			textureRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+			textureRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered;
+
+			bool fotoOk = false;
+			try
+			{
+				Image image = null ;
+
+				if (persona.GeneroPersona == Persona.Genero.Masculino)
+				{
+					image = Image.LoadFromFile("res://fotos_default/personaHombre.jpg");
+				}
+				else
+				{
+					image = Image.LoadFromFile("res://fotos_default/personaMujer.jpg");
+				}
+
+				if (image != null)
+				{
+					var texture = ImageTexture.CreateFromImage(image);
+					textureRect.Texture = texture;
+					var shader = new Shader();
+					shader.Code = @"
+shader_type canvas_item;
+
+void fragment() {
+    vec2 uv = UV - vec2(0.5);
+    float dist = length(uv);
+    
+    if (dist > 0.5) {
+        COLOR = vec4(0.0);
+    } else {
+        COLOR = texture(TEXTURE, UV);
+    }
+}";
+					var material = new ShaderMaterial();
+					material.Shader = shader;
+					textureRect.Material = material;
+
+					fotoOk = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				GD.PrintErr($"Error cargando foto {persona.RutaFotografia}: {ex.Message}");
+			}
+
+			
+
+			if (fotoOk)
+			{
+				marcador.AddChild(textureRect);
+				marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Foto cargada)";
+			}
+			else
+			{
+				var label = new Label();
+				label.Text = "📷";
+				label.SetAnchorsPreset(Control.LayoutPreset.Center);
+				marcador.AddChild(label);
+				marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Error al cargar foto)";
+			}
 		}
 
 		var labelNombre = new Label();

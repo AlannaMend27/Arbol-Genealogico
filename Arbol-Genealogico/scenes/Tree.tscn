@@ -148,10 +148,11 @@ metadata/_edit_use_anchors_ = true
 [node name="madre" type="OptionButton" parent="."]
 anchors_preset = -1
 anchor_right = 0.43800002
-offset_left = 86.0
-offset_top = 175.0
-offset_right = 118.0
-offset_bottom = 195.0
+offset_left = 70.0
+offset_top = 172.0
+offset_right = 102.0
+offset_bottom = 192.0
+fit_to_longest_item = false
 metadata/_edit_use_anchors_ = true
 
 [node name="Label13" type="Label" parent="."]
@@ -166,10 +167,11 @@ metadata/_edit_use_anchors_ = true
 [node name="padre" type="OptionButton" parent="."]
 anchors_preset = -1
 anchor_right = 0.43800002
-offset_left = 86.0
-offset_top = 206.0
-offset_right = 118.0
-offset_bottom = 226.0
+offset_left = 71.0
+offset_top = 203.0
+offset_right = 103.0
+offset_bottom = 223.0
+fit_to_longest_item = false
 metadata/_edit_use_anchors_ = true
 
 [node name="Label14" type="Label" parent="."]
@@ -184,10 +186,10 @@ metadata/_edit_use_anchors_ = true
 [node name="genero" type="OptionButton" parent="."]
 anchors_preset = -1
 anchor_right = 0.43800002
-offset_left = 99.0
-offset_top = 532.0
-offset_right = 131.0
-offset_bottom = 552.0
+offset_left = 82.0
+offset_top = 529.0
+offset_right = 114.0
+offset_bottom = 549.0
 metadata/_edit_use_anchors_ = true
 
 [node name="aceptar" type="Button" parent="."]
@@ -282,18 +284,18 @@ metadata/_edit_use_anchors_ = true
 [node name="tipodepersona" type="OptionButton" parent="."]
 anchors_preset = -1
 anchor_right = 0.43800002
-offset_left = 187.0
-offset_top = 5.0
-offset_right = 219.0
-offset_bottom = 25.0
+offset_left = 142.0
+offset_top = 3.0
+offset_right = 174.0
+offset_bottom = 23.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Label16" type="Label" parent="."]
 visible = false
-offset_left = -44.0
-offset_top = 189.0
-offset_right = 44.0
-offset_bottom = 212.0
+offset_left = -1.0
+offset_top = 191.0
+offset_right = 87.0
+offset_bottom = 214.0
 theme_override_fonts/font = ExtResource("3_qvbew")
 text = "Cónyugue"
 horizontal_alignment = 1
@@ -303,10 +305,11 @@ vertical_alignment = 1
 visible = false
 anchors_preset = -1
 anchor_right = 0.43800002
-offset_left = 69.0
-offset_top = 193.0
-offset_right = 101.0
-offset_bottom = 213.0
+offset_left = 106.0
+offset_top = 190.0
+offset_right = 138.0
+offset_bottom = 210.0
+fit_to_longest_item = false
 
 [node name="Label17" type="Label" parent="."]
 offset_left = -42.0

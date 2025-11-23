@@ -1,11 +1,11 @@
 using Godot;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Arbol_Core.Models;
 using Arbol_Core.DataStructures;
 using ArbolGenealogico.scripts.UI;
 
-//FALTA VALIDAR NUMEROS PARA LAS COORDENADAS    
 public partial class AgregarPersona : Node2D
 {
 	private VisualizadorArbolUI visualizadorUI;
@@ -139,6 +139,9 @@ public partial class AgregarPersona : Node2D
 
 		//se crea la carpeta para fotos si es que no existe
 		CrearCarpetaFotos();
+
+		// se configura el tamaño de los dropdowns
+		ConfigurarTamañoDropdowns();
 	}
 
 	private void CrearCarpetaFotos()
@@ -273,6 +276,79 @@ public partial class AgregarPersona : Node2D
 				}
 			}
 
+
+			// Validar que solo hay una pareja fundadora !!!!!!!
+
+			var arbolActual = visualizador.ObtenerArbol();
+			var fundadoresExistentes = arbolActual.ObtenerPersonasFundadoras();
+			
+			// Si ya existen fundadores
+			if (fundadoresExistentes != null && fundadoresExistentes.Count > 0)
+			{
+				Persona fundadorExistente = fundadoresExistentes[0];
+				
+				// Si se intenta agregar como Familiar SIN padres, sería otro fundador
+				if (tipoDePersona.Selected == 0) // 0 = Familiar
+				{
+					Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
+					Persona madre = BuscarPersonaEnLista(mujeres, opcionesMadre.Selected);
+					
+					// Si no tiene padres, sería un fundador adicional (error)
+					if (padre == null && madre == null)
+					{
+						MostrarError("Ya existe un fundador en el árbol. No se puede agregar otro familiar sin padres.");
+						return;
+					}
+				}
+
+				// Si es Cónyuge, debe ser del fundador
+				else if (tipoDePersona.Selected == 1) // 1 = Cónyuge
+				{
+					// Extraer cédula del texto seleccionado en el OptionButton
+					string textoSeleccionado = conyugue.GetItemText(conyugue.Selected);
+					int inicioParentesis = textoSeleccionado.LastIndexOf('(');
+					int finParentesis = textoSeleccionado.LastIndexOf(')');
+
+					if (inicioParentesis > 0 && finParentesis > inicioParentesis)
+					{
+						string cedulaConyugue = textoSeleccionado.Substring(
+							inicioParentesis + 1,
+							finParentesis - inicioParentesis - 1
+						).Trim();
+
+						// Buscar en personasCreadas
+						Persona conyugueSeleccionado = personasCreadas.Find(p => p.Cedula == cedulaConyugue);
+
+						if (conyugueSeleccionado == null || conyugueSeleccionado.Cedula != fundadorExistente.Cedula)
+						{
+							MostrarError("Ya existe un fundador. Solo se permite agregar su cónyuge.");
+							return;
+						}
+					}
+				}
+			}
+
+
+			// Verificar que se seleccionaron ambos padres (excepto para fundadores)
+			if (tipoDePersona.Selected == 0) // 0 = Familiar
+			{
+				Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
+				Persona madre = BuscarPersonaEnLista(mujeres, opcionesMadre.Selected);
+				
+				// Si ya hay fundadores en el árbol, esta persona DEBE tener padres
+				if (fundadoresExistentes != null && fundadoresExistentes.Count > 0)
+				{
+					if (padre == null || madre == null)
+					{
+						MostrarError("Debe seleccionar tanto al padre como a la madre.\n\n" +
+									"Solo la primera persona del árbol puede no tener padres.");
+						return;
+					}
+				}
+			}
+			
+
+			// verificar que el nombre no tenga numeros
 			bool tieneNumeros = false;
 			foreach (char c in nombreInput.Text)
 			{
@@ -300,6 +376,8 @@ public partial class AgregarPersona : Node2D
 				MostrarError("Debe incluir al menos un apellido");
 				return;
 			}
+			// Validad formato de fecha
+
 			DateTime fechaNac;
 			if (!DateTime.TryParse(fechaInput.Text, out fechaNac))
 			{
@@ -353,11 +431,12 @@ public partial class AgregarPersona : Node2D
 				}
 			}
 
+			// Validaciones de edad
 			int edadCalculada = DateTime.Today.Year - fechaNac.Year;
 			if (fechaNac.Date > DateTime.Today.AddYears(-edadCalculada))
 				edadCalculada--;
 
-			if (edad > edadCalculada)
+			if (edad > edadCalculada || edad < edadCalculada)
 			{
 				MostrarError($"La edad no coincide con la fecha de nacimiento.\nEdad calculada: {edadCalculada} años");
 				return;
@@ -368,7 +447,9 @@ public partial class AgregarPersona : Node2D
 			{
 				return;
 			}
+			
 
+			// Verificar el formato de la fecha de fallecimiento
 			DateTime? fechaFallecimiento = null;
 			if (muertoCheck.ButtonPressed)
 			{
@@ -622,6 +703,36 @@ public partial class AgregarPersona : Node2D
 		conyugue.Visible = !esFamiliar;
 	}
 
+	private void ConfigurarTamañoDropdowns()
+	{
+		// Configurar tamaño fijo para los botones
+		ConfigurarDrop(opcionesPadre, new Vector2(170, 28));
+		ConfigurarDrop(opcionesMadre, new Vector2(170, 28));
+		ConfigurarDrop(opcionesGenero, new Vector2(163, 35));
+		ConfigurarDrop(tipoDePersona, new Vector2(120, 35));
+		ConfigurarDrop(conyugue, new Vector2(170, 28));	
+	}
+
+	private void ConfigurarDrop(OptionButton drop, Vector2 size)
+	{
+		drop.CustomMinimumSize = size;
+		drop.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+		drop.ClipContents = true;
+
+		// Forzar clipping del texto interno
+		var label = drop.GetChild(0) as Label;
+		if (label != null)
+			label.ClipText = true;
+
+		// Forzar tamaño final después del layout
+		drop.CallDeferred("set_size", size);
+
+		// Limitar el tamaño del popup
+		var popup = drop.GetPopup();
+		popup.MaxSize = new Vector2I(400, 250);
+	}
+
+
 	private void OnCancelarPressed()
 	{
 		LimpiarCampos();
@@ -690,7 +801,7 @@ public partial class AgregarPersona : Node2D
 		foreach (var hombre in hombres)
 		{
 			opcionesPadre.AddItem($"{hombre.NombreCompleto} ({hombre.Cedula})");
-		}
+		}	
 
 		foreach (var mujer in mujeres)
 		{
@@ -699,26 +810,55 @@ public partial class AgregarPersona : Node2D
 
 		opcionesPadre.Selected = 0;
 		opcionesMadre.Selected = 0;
+
 	}
 
 	private void ActualizarListaConyuges()
 	{
-		conyugue.Clear();
-		conyugue.AddItem("(ninguno)");
-
-		//obtener lista según género seleccionado
+		// Guardar la selección actual antes de limpiar
+		int seleccionActual = conyugue.Selected;
+		string textoSeleccionado = seleccionActual > 0 ? conyugue.GetItemText(seleccionActual) : "";
+		
+		// Obtener lista según género seleccionado
 		List<Persona> personasDisponibles = ObtenerPersonasParaConyuge();
-
-		//agregar solo personas que NO tienen cónyuge
-		foreach (var persona in personasDisponibles)
+		
+		// Verificar si la persona actualmente seleccionada sigue siendo válida
+		bool seleccionSigueValida = false;
+		
+		if (seleccionActual > 0 && !string.IsNullOrEmpty(textoSeleccionado))
 		{
-			if (persona.Conyuge == null)
+			// Extraer cédula de la selección actual
+			int inicioParentesis = textoSeleccionado.LastIndexOf('(');
+			int finParentesis = textoSeleccionado.LastIndexOf(')');
+			
+			if (inicioParentesis > 0 && finParentesis > inicioParentesis)
 			{
-				conyugue.AddItem($"{persona.NombreCompleto} ({persona.Cedula})");
+				string cedulaSeleccionada = textoSeleccionado.Substring(
+					inicioParentesis + 1,
+					finParentesis - inicioParentesis - 1
+				).Trim();
+				
+				// Verificar si esa persona está en la lista de disponibles
+				seleccionSigueValida = personasDisponibles.Any(p => p.Cedula == cedulaSeleccionada);
 			}
 		}
-
-		conyugue.Selected = 0;
+		
+		if (!seleccionSigueValida)
+		{
+			conyugue.Clear();
+			conyugue.AddItem("(ninguno)");
+			
+			foreach (var persona in personasDisponibles)
+			{
+				if (persona.Conyuge == null)
+				{
+					conyugue.AddItem($"{persona.NombreCompleto} ({persona.Cedula})");
+				}
+			}
+			
+			conyugue.Selected = 0;
+		}
+		// Si la selección sigue válida, no hacemos nada (mantiene la selección actual)
 	}
 
 	private List<Persona> ObtenerPersonasParaConyuge()
