@@ -60,7 +60,7 @@ public partial class MapaUI : Node2D
 		mapaTexture = GetNodeOrNull<TextureRect>(MapaTexturePath);
 		if (mapaTexture == null)
 		{
-			GD.PrintErr("MapaUI: no se encontró TextureRect en la ruta '" + MapaTexturePath + "'");
+			// MapaTexture no encontrado
 			return;
 		}
 
@@ -77,9 +77,7 @@ public partial class MapaUI : Node2D
 		_panOffset.X = 200; // Mover 200px más a la izquierda
 		_initialPanOffset = _panOffset;
 		
-		GD.Print($"MapaTextureRect: Pos={mapaTexture.Position}, Size={mapaTexture.Size}");
-		GD.Print($"Base offset: {baseOffset}");
-		GD.Print($"Offset inicial (ajustado izquierda): {_panOffset}");
+		// Offset inicial calculado y aplicado
 
 		grafo = Grafo.ObtenerInstancia();
 
@@ -144,8 +142,7 @@ public partial class MapaUI : Node2D
 			mapaTextureRect.GetParent().RemoveChild(mapaTextureRect);
 			_mapaContainer.AddChild(mapaTextureRect);
 			
-			GD.Print($"ViewportClip configurado: Pos={_viewportClip.Position}, Size={_viewportClip.Size}");
-			GD.Print($"MapaTextureRect: Pos={mapaTextureRect.Position}, Size={mapaTextureRect.Size}");
+				// ViewportClip y MapaTextureRect reubicados
 		}
 	}
 
@@ -534,7 +531,7 @@ public partial class MapaUI : Node2D
 		}
 		catch (Exception ex)
 		{
-			GD.PrintErr($"Error cargando foto {rutaFoto}: {ex.Message}");
+			// Error al cargar foto (silenciado)
 			return false;
 		}
 	}

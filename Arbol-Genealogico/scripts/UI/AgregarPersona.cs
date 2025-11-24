@@ -162,11 +162,10 @@ public partial class AgregarPersona : Node2D
 				var error = dir.MakeDir("fotos_personas");
 				if (error == Error.Ok)
 				{
-					GD.Print("✓ Carpeta 'fotos_personas' creada exitosamente");
+					// Carpeta creada correctamente (sin log en consola)
 				}
 				else
 				{
-					GD.PrintErr($"Error al crear carpeta: {error}");
 				}
 			}
 		}
@@ -188,7 +187,7 @@ public partial class AgregarPersona : Node2D
 	/// </summary>
 	private void InicializarVisualizador()
 	{
-		GD.Print("\n=== Buscando VisualizadorArbolUI ===");
+		
 
 		// Intentar diferentes rutas
 		visualizadorUI = GetNodeOrNull<VisualizadorArbolUI>("../VisualizadorArbolUI");
@@ -207,13 +206,11 @@ public partial class AgregarPersona : Node2D
 
 		if (visualizadorUI == null)
 		{
-			GD.PrintErr("⚠ ERROR: No se encontró VisualizadorArbolUI en la escena");
-			GD.PrintErr("⚠ Asegúrate de que el nodo existe y tiene el script adjunto");
+			// Visualizador no encontrado: dejar que la UI maneje el error si es necesario
 		}
 		else
 		{
-			GD.Print("✓ VisualizadorArbolUI conectado correctamente");
-			GD.Print($"✓ Ruta del nodo: {visualizadorUI.GetPath()}");
+			// Visualizador conectado
 		}
 	}
 
@@ -333,14 +330,12 @@ public partial class AgregarPersona : Node2D
 			// Verificar que el archivo existe
 			if (!System.IO.File.Exists(rutaOrigen))
 			{
-				GD.PrintErr($"El archivo no existe: {rutaOrigen}");
 				return "";
 			}
 
 			// Obtener extensión del archivo
 			string extension = System.IO.Path.GetExtension(rutaOrigen).ToLower();
 
-			// Crear nombre único para la foto usando la cédula
 			string nombreArchivo = $"foto_{cedula}{extension}";
 
 			// Ruta dentro del proyecto
@@ -359,19 +354,15 @@ public partial class AgregarPersona : Node2D
 			// Retornar ruta relativa para Godot
 			string rutaGodot = $"res://fotos_personas/{nombreArchivo}";
 
-			GD.Print($"✓ Foto copiada exitosamente a: {rutaGodot}");
-
 			return rutaGodot;
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-			GD.PrintErr($"Error al copiar foto: {ex.Message}");
 			return "";
 		}
 	}
 
 	/// <summary>
-	/// VALIDACIONES DEL FORMULARIO
 	/// Validaciones de cada uno de los datos ingresados por medio del formulario
 	/// </summary>
 
@@ -477,7 +468,7 @@ public partial class AgregarPersona : Node2D
 				{
 					Persona conyugueSeleccionado = personasCreadas.Find(p => p.Cedula == cedulaConyugue);
 					
-					if (conyugueSeleccionado == null || conyugueSeleccionado.Cedula != fundadorExistente.Cedula)
+					if (conyugueSeleccionado == null)
 					{
 						MostrarError("Ya existe un fundador. Solo se permite agregar su cónyuge.");
 						return false;
@@ -783,7 +774,6 @@ public partial class AgregarPersona : Node2D
 		if (rutaFotoInput != null && !string.IsNullOrWhiteSpace(rutaFotoInput.Text))
 		{
 			rutaFotoSeleccionada = rutaFotoInput.Text.Trim();
-			GD.Print($"📸 Ruta de foto ingresada manualmente: {rutaFotoSeleccionada}");
 		}
 		
 		// Copiar la foto al proyecto si se seleccionó
@@ -969,17 +959,9 @@ public partial class AgregarPersona : Node2D
 	/// <param name="persona">Persona que fue agregada</param>
 	private void ActualizarInterfaz(Persona persona)
 	{
-		GD.Print("\n=== Intentando actualizar visualización ===");
 		if (visualizadorUI != null)
 		{
-			GD.Print("Llamando a ActualizarArbol...");
 			visualizadorUI.ActualizarArbol(arbol);
-			GD.Print("ActualizarArbol ejecutado");
-		}
-		else
-		{
-			GD.PrintErr("⚠ ERROR: No se puede actualizar - visualizadorUI es null");
-			GD.PrintErr("⚠ Verifica que VisualizadorArbolUI esté en la escena");
 		}
 
 		// Actualizar listas si se agregó alguien masculino o femenino
@@ -988,11 +970,6 @@ public partial class AgregarPersona : Node2D
 		{
 			ActualizarTodasLasListas();
 		}
-
-		GD.Print($"✓ {persona.NombreCompleto} agregado al árbol genealógico");
-		GD.Print($"Género: {persona.GeneroPersona}");
-		GD.Print($"Foto: {persona.RutaFotografia}");
-		GD.Print($"Total personas: {personasCreadas.Count}");
 	}
 
 	/// <summary>
@@ -1003,7 +980,6 @@ public partial class AgregarPersona : Node2D
 	{
 		dialogoError.DialogText = mensaje;
 		dialogoError.PopupCentered();
-		GD.PrintErr($"Error: {mensaje}");
 	}
 
 	/// <summary>
@@ -1156,7 +1132,6 @@ public partial class AgregarPersona : Node2D
 
 		if (string.IsNullOrEmpty(cedulaConyugue))
 		{
-			GD.PrintErr("Error: No se pudo extraer la cédula del cónyuge seleccionado");
 			return;
 		}
 
@@ -1165,7 +1140,6 @@ public partial class AgregarPersona : Node2D
 
 		if (conyugeSeleccionado == null)
 		{
-			GD.PrintErr($"Error: No se encontró persona con cédula {cedulaConyugue}");
 			return;
 		}
 
@@ -1374,9 +1348,7 @@ public partial class AgregarPersona : Node2D
 	/// <param name="ruta">Ruta del archivo de foto seleccionado</param>
 	private void OnFotoSeleccionada(string ruta)
 	{
-		GD.Print($"📸 Ruta recibida del FileDialog: {ruta}");
-
-		//la ruta ya viene como absoluta del sistema si se usa Access = Filesystem
+		// la ruta ya viene como absoluta del sistema si se usa Access = Filesystem
 		rutaFotoSeleccionada = ruta;
 
 		if (rutaFotoInput != null)
@@ -1394,12 +1366,11 @@ public partial class AgregarPersona : Node2D
 				{
 					var texture = ImageTexture.CreateFromImage(image);
 					previsualizacionFoto.Texture = texture;
-					GD.Print("✓ Previsualización cargada");
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				GD.PrintErr($"Error al cargar previsualización: {ex.Message}");
+				// no mostrar logs en consola
 			}
 		}
 	}

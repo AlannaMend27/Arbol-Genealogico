@@ -129,101 +129,131 @@ namespace ArbolGenealogico.scripts.UI
             AjustarTamañoCanvas();
         }
 
-        private void CalcularPosicionesNodos()
+private void CalcularPosicionesNodos()
+{
+    var fundadores = arbol.ObtenerPersonasFundadoras();
+    
+    if (fundadores.Count == 0)
+        return;
+    
+    float xActual = MARGEN_INICIAL;
+    
+    // Procesar cada fundador y su familia completa
+    foreach (var fundador in fundadores)
+    {
+        if (posicionesNodos.ContainsKey(fundador.Cedula))
+            continue;
+        
+        float anchoFamilia = CalcularAnchoSubarbol(fundador);
+        
+        // Posicionar fundador y cónyuge (si tiene)
+        if (fundador.Conyuge != null && !posicionesNodos.ContainsKey(fundador.Conyuge.Cedula))
         {
-            var todasLasPersonas = arbol.ObtenerTodasLasPersonas();
-
-            // Agrupar por generación
-            var porGeneracion = new Dictionary<int, List<Persona>>();
-            foreach (var persona in todasLasPersonas)
-            {
-                if (!porGeneracion.ContainsKey(persona.Generacion))
-                {
-                    porGeneracion[persona.Generacion] = new List<Persona>();
-                }
-                porGeneracion[persona.Generacion].Add(persona);
-            }
-
-            var generacionesOrdenadas = porGeneracion.Keys.OrderBy(x => x).ToList();
-
-            // Calcular posiciones por generación
-            foreach (var gen in generacionesOrdenadas)
-            {
-                var personasGen = porGeneracion[gen];
-                float yPos = MARGEN_INICIAL + (gen * ESPACIO_VERTICAL);
-
-                // Agrupar por familias (hermanos y sus cónyuges)
-                var familias = AgruparPorFamilia(personasGen);
-
-                float xOffset = MARGEN_INICIAL;
-
-                foreach (var familia in familias)
-                {
-                    // Calcular cuánto espacio necesita esta familia
-                    int espaciosNecesarios = 0;
-                    foreach (var persona in familia)
-                    {
-                        espaciosNecesarios++;
-                        if (persona.Conyuge != null && !posicionesNodos.ContainsKey(persona.Conyuge.Cedula))
-                        {
-                            espaciosNecesarios++;
-                        }
-                    }
-
-                    // Posicionar cada miembro de la familia
-                    int espacioActual = 0;
-                    foreach (var persona in familia)
-                    {
-                        if (posicionesNodos.ContainsKey(persona.Cedula))
-                            continue;
-
-                        float xPos = xOffset + (espacioActual * ESPACIO_HORIZONTAL);
-                        posicionesNodos[persona.Cedula] = new Vector2(xPos, yPos);
-                        espacioActual++;
-
-                        // Posicionar cónyuge al lado
-                        if (persona.Conyuge != null && !posicionesNodos.ContainsKey(persona.Conyuge.Cedula))
-                        {
-                            float xPosConyuge = xOffset + (espacioActual * ESPACIO_HORIZONTAL);
-                            posicionesNodos[persona.Conyuge.Cedula] = new Vector2(xPosConyuge, yPos);
-                            espacioActual++;
-                        }
-                    }
-
-                    xOffset += (espaciosNecesarios * ESPACIO_HORIZONTAL) + 80;
-                }
-            }
+            float xCentroPareja = xActual + (anchoFamilia / 2);
+            posicionesNodos[fundador.Cedula] = new Vector2(xCentroPareja - ESPACIO_HORIZONTAL/2, MARGEN_INICIAL);
+            posicionesNodos[fundador.Conyuge.Cedula] = new Vector2(xCentroPareja + ESPACIO_HORIZONTAL/2, MARGEN_INICIAL);
         }
-
-        private List<List<Persona>> AgruparPorFamilia(List<Persona> personas)
+        else
         {
-            var familias = new List<List<Persona>>();
-            var procesadas = new HashSet<string>();
-
-            foreach (var persona in personas)
-            {
-                if (procesadas.Contains(persona.Cedula))
-                    continue;
-
-                var familia = new List<Persona> { persona };
-                procesadas.Add(persona.Cedula);
-
-                // Agregar hermanos
-                var hermanos = persona.ObtenerHermanos();
-                foreach (var hermano in hermanos)
-                {
-                    if (personas.Contains(hermano) && !procesadas.Contains(hermano.Cedula))
-                    {
-                        familia.Add(hermano);
-                        procesadas.Add(hermano.Cedula);
-                    }
-                }
-
-                familias.Add(familia);
-            }
-
-            return familias;
+            float xCentro = xActual + (anchoFamilia / 2);
+            posicionesNodos[fundador.Cedula] = new Vector2(xCentro, MARGEN_INICIAL);
         }
+        
+        // Posicionar hijos recursivamente
+        PosicionarHijosJerarquico(fundador, xActual, MARGEN_INICIAL + ESPACIO_VERTICAL);
+        
+        xActual += anchoFamilia + 80;
+    }
+}
+
+private float CalcularAnchoSubarbol(Persona persona)
+{
+    if (persona.Hijos.Count == 0)
+    {
+        // Si tiene cónyuge, ocupan 2 espacios
+        return persona.Conyuge != null ? ESPACIO_HORIZONTAL * 2 : ESPACIO_HORIZONTAL;
+    }
+    
+    // Calcular ancho total de todos los hijos
+    float anchoHijos = 0;
+    var hijosUnicos = new HashSet<Persona>(persona.Hijos);
+    
+    foreach (var hijo in hijosUnicos)
+    {
+        anchoHijos += CalcularAnchoSubarbol(hijo);
+    }
+    
+    // El ancho es el mayor entre: ancho de hijos o ancho de padres
+    float anchoPadres = persona.Conyuge != null ? ESPACIO_HORIZONTAL * 2 : ESPACIO_HORIZONTAL;
+    return Math.Max(anchoHijos, anchoPadres);
+}
+
+private void PosicionarHijosJerarquico(Persona padre, float xInicio, float yPos)
+{
+    if (padre.Hijos.Count == 0)
+        return;
+    
+    // Obtener hijos únicos que no han sido posicionados
+    var hijosUnicos = new List<Persona>();
+    foreach (var hijo in padre.Hijos)
+    {
+        if (!posicionesNodos.ContainsKey(hijo.Cedula))
+        {
+            hijosUnicos.Add(hijo);
+        }
+    }
+    
+    if (hijosUnicos.Count == 0)
+        return;
+    
+    // Ordenar por cédula para consistencia
+    hijosUnicos = hijosUnicos.OrderBy(h => h.Cedula).ToList();
+    
+    // Calcular ancho total de todos los hijos
+    float anchoTotalHijos = 0;
+    foreach (var hijo in hijosUnicos)
+    {
+        anchoTotalHijos += CalcularAnchoSubarbol(hijo);
+    }
+    
+    // Obtener el centro de los padres
+    Vector2 posPadre = posicionesNodos.ContainsKey(padre.Cedula) 
+        ? posicionesNodos[padre.Cedula] 
+        : Vector2.Zero;
+    
+    Vector2 posConyuge = (padre.Conyuge != null && posicionesNodos.ContainsKey(padre.Conyuge.Cedula)) 
+        ? posicionesNodos[padre.Conyuge.Cedula] 
+        : posPadre;
+    
+    // Centro entre ambos padres + centro del nodo
+    float xCentroPadres = (posPadre.X + posConyuge.X) / 2 + (RADIO_NODO);
+    
+    // Los hijos se centran bajo los padres
+    float xInicioHijos = xCentroPadres - (anchoTotalHijos / 2);
+    float xActualHijo = xInicioHijos;
+    
+    foreach (var hijo in hijosUnicos)
+    {
+        float anchoHijo = CalcularAnchoSubarbol(hijo);
+        float xCentroHijo = xActualHijo + (anchoHijo / 2);
+        
+        // Posicionar hijo y su cónyuge (si tiene)
+        if (hijo.Conyuge != null && !posicionesNodos.ContainsKey(hijo.Conyuge.Cedula))
+        {
+            posicionesNodos[hijo.Cedula] = new Vector2(xCentroHijo - ESPACIO_HORIZONTAL/2, yPos);
+            posicionesNodos[hijo.Conyuge.Cedula] = new Vector2(xCentroHijo + ESPACIO_HORIZONTAL/2, yPos);
+        }
+        else
+        {
+            posicionesNodos[hijo.Cedula] = new Vector2(xCentroHijo, yPos);
+        }
+        
+        // Recursivamente posicionar los nietos
+        PosicionarHijosJerarquico(hijo, xActualHijo, yPos + ESPACIO_VERTICAL);
+        
+        xActualHijo += anchoHijo;
+    }
+}
 
         private void DibujarConexiones()
         {
@@ -443,8 +473,6 @@ namespace ArbolGenealogico.scripts.UI
         {
             try
             {
-                GD.Print($"📸 Intentando cargar foto: {persona.RutaFotografia}");
-
                 Texture2D texture = null;
 
                 // si hay ruta fotografica, intenta cargar la foto
@@ -455,7 +483,6 @@ namespace ArbolGenealogico.scripts.UI
                     if (ResourceLoader.Exists(persona.RutaFotografia))
                     {
                         texture = GD.Load<Texture2D>(persona.RutaFotografia);
-                        GD.Print($"✓ Foto cargada con GD.Load: {persona.RutaFotografia}");
                     }
                     // Si no existe en res://, intentar cargar desde sistema de archivos
                     else
@@ -467,7 +494,6 @@ namespace ArbolGenealogico.scripts.UI
                             if (image != null)
                             {
                                 texture = ImageTexture.CreateFromImage(image);
-                                GD.Print($"✓ Foto cargada con Image.LoadFromFile: {rutaAbsoluta}");
                             }
                         }
                     }
@@ -524,18 +550,15 @@ void fragment() {
 
                     hboxFoto.AddChild(textureRect);
 
-                    GD.Print($"✓ Foto mostrada exitosamente para {persona.NombreCompleto}");
                     return true;
                 }
                 else
                 {
-                    GD.PrintErr($"⚠ No se pudo cargar textura para: {persona.RutaFotografia}");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                GD.PrintErr($"❌ Error al cargar foto para {persona.NombreCompleto}: {ex.Message}");
                 return false;
             }
         }
