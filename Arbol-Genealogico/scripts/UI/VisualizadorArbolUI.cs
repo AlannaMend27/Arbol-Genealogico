@@ -382,14 +382,10 @@ namespace ArbolGenealogico.scripts.UI
                 fotoMostrada = MostrarFotoPersona(vbox, persona);
             }
 
-            //si no se muestra la foto, se pone un ícono 
+            //si no se muestra la foto, se una foto por default
             if (!fotoMostrada)
             {
-                var lblAvatar = new Label();
-                lblAvatar.Text = persona.GeneroPersona == Persona.Genero.Masculino ? "👤" : "👩";
-                lblAvatar.HorizontalAlignment = HorizontalAlignment.Center;
-                lblAvatar.AddThemeFontSizeOverride("font_size", 32);
-                vbox.AddChild(lblAvatar);
+                fotoMostrada = MostrarFotoPersona(vbox, persona);
             }
 
             //ícono de estado
@@ -400,16 +396,37 @@ namespace ArbolGenealogico.scripts.UI
             lblEstado.AddThemeColorOverride("font_color", persona.EstaVivo ? Colors.LimeGreen : Colors.DarkGray);
             vbox.AddChild(lblEstado);
 
-            //nombre completo en una línea
+            // === PANEL CONTENEDOR DEL NOMBRE ===
+            var panelNombre = new PanelContainer();
+            panelNombre.CustomMinimumSize = new Vector2(RADIO_NODO * 2 - 8, 22);
+
+            // Crear un estilo para el fondo azul (#123258)
+            var styleBoxNombre = new StyleBoxFlat(); // Nuevo nombre para no chocar con los tuyos
+            styleBoxNombre.BgColor = new Color("#334d80");
+            styleBoxNombre.CornerRadiusTopLeft = 4;
+            styleBoxNombre.CornerRadiusTopRight = 4;
+            styleBoxNombre.CornerRadiusBottomLeft = 4;
+            styleBoxNombre.CornerRadiusBottomRight = 4;
+
+            panelNombre.AddThemeStyleboxOverride("panel", styleBoxNombre);
+
+            // === LABEL DEL NOMBRE ===
             var lblNombreCompleto = new Label();
             lblNombreCompleto.Text = $"{persona.Nombre} {persona.Apellido}";
             lblNombreCompleto.HorizontalAlignment = HorizontalAlignment.Center;
-            lblNombreCompleto.AddThemeFontSizeOverride("font_size", fotoMostrada ? 8 : 10);
-            lblNombreCompleto.AddThemeColorOverride("font_color", Colors.Black);
+            lblNombreCompleto.VerticalAlignment = VerticalAlignment.Center;
             lblNombreCompleto.AutowrapMode = TextServer.AutowrapMode.Word;
-            lblNombreCompleto.CustomMinimumSize = new Vector2(RADIO_NODO * 2 - 8, 0);
-            vbox.AddChild(lblNombreCompleto);
 
+            lblNombreCompleto.AddThemeColorOverride("font_color", Colors.White);
+            lblNombreCompleto.AddThemeFontSizeOverride("font_size", 12);
+
+            // Agregar label dentro del panel azul
+            panelNombre.AddChild(lblNombreCompleto);
+
+            // Agregar ese panel al vbox del nodo
+            vbox.AddChild(panelNombre);
+
+            // Tu línea original (esta sí se queda)
             contenedorCanvas.AddChild(panel);
 
             //botón de información
@@ -430,25 +447,46 @@ namespace ArbolGenealogico.scripts.UI
 
                 Texture2D texture = null;
 
-                // Verificar si existe en res://
-                if (ResourceLoader.Exists(persona.RutaFotografia))
+                // si hay ruta fotografica, intenta cargar la foto
+
+                if (persona.RutaFotografia != "")
                 {
-                    texture = GD.Load<Texture2D>(persona.RutaFotografia);
-                    GD.Print($"✓ Foto cargada con GD.Load: {persona.RutaFotografia}");
-                }
-                // Si no existe en res://, intentar cargar desde sistema de archivos
-                else
-                {
-                    string rutaAbsoluta = ProjectSettings.GlobalizePath(persona.RutaFotografia);
-                    if (System.IO.File.Exists(rutaAbsoluta))
+                    // Verificar si existe en res://
+                    if (ResourceLoader.Exists(persona.RutaFotografia))
                     {
-                        var image = Image.LoadFromFile(rutaAbsoluta);
-                        if (image != null)
+                        texture = GD.Load<Texture2D>(persona.RutaFotografia);
+                        GD.Print($"✓ Foto cargada con GD.Load: {persona.RutaFotografia}");
+                    }
+                    // Si no existe en res://, intentar cargar desde sistema de archivos
+                    else
+                    {
+                        string rutaAbsoluta = ProjectSettings.GlobalizePath(persona.RutaFotografia);
+                        if (System.IO.File.Exists(rutaAbsoluta))
                         {
-                            texture = ImageTexture.CreateFromImage(image);
-                            GD.Print($"✓ Foto cargada con Image.LoadFromFile: {rutaAbsoluta}");
+                            var image = Image.LoadFromFile(rutaAbsoluta);
+                            if (image != null)
+                            {
+                                texture = ImageTexture.CreateFromImage(image);
+                                GD.Print($"✓ Foto cargada con Image.LoadFromFile: {rutaAbsoluta}");
+                            }
                         }
                     }
+                }
+
+                // si no hay ruta fotografica asignada a la persona, se carga imagen por default
+                else
+                {
+                    Image image = null;
+                    if (persona.GeneroPersona == Persona.Genero.Masculino)
+                    {
+                        image = Image.LoadFromFile("res://fotos_default/personaHombre.jpg");
+                    }
+                    else
+                    {
+                        image = Image.LoadFromFile("res://fotos_default/personaMujer.jpg");
+                    }
+
+                    texture = ImageTexture.CreateFromImage(image);
                 }
 
                 if (texture != null)
