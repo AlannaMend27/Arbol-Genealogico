@@ -48,6 +48,9 @@ public partial class AgregarPersona : Node2D
 	private AcceptDialog dialogoError;
 	private Button volverBtn;
 
+	/// <summary>
+	/// Inicializa todos los componentes de la interfaz y configura los eventos del formulario
+	/// </summary>
 	public override void _Ready()
 	{
 		nombreInput = GetNode<LineEdit>("nombre");
@@ -144,7 +147,9 @@ public partial class AgregarPersona : Node2D
 		ConfigurarTamañoDropdowns();
 	}
 
-	// Crea la carpeta de fotos si no existe
+	/// <summary>
+	/// Crea la carpeta de fotos dentro del proyecto si no existe
+	/// </summary>
 	private void CrearCarpetaFotos()
 	{
 		string carpetaFotos = "res://fotos_personas";
@@ -167,7 +172,9 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Actualiza la visualización del árbol
+	/// <summary>
+	/// Actualiza la visualización del árbol genealógico en la interfaz
+	/// </summary>
 	private void ActualizarVisualizacionArbol()
 	{
 		if (visualizadorUI != null)
@@ -176,7 +183,9 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Inicializa el visualizador del árbol
+	/// <summary>
+	/// Inicializa el visualizador del árbol genealógico buscándolo en la escena
+	/// </summary>
 	private void InicializarVisualizador()
 	{
 		GD.Print("\n=== Buscando VisualizadorArbolUI ===");
@@ -208,7 +217,11 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Busca el visualizador recursivamente en los nodos
+	/// <summary>
+	/// Busca recursivamente el visualizador del árbol en el árbol de nodos
+	/// </summary>
+	/// <param name="nodo">Nodo desde donde iniciar la búsqueda</param>
+	/// <returns>El visualizador encontrado o null si no existe</returns>
 	private VisualizadorArbolUI BuscarVisualizadorRecursivo(Node nodo)
 	{
 		if (nodo is VisualizadorArbolUI visualizador)
@@ -226,7 +239,9 @@ public partial class AgregarPersona : Node2D
 		return null;
 	}
 
-	// Maneja el evento de aceptar y valida los datos
+	/// <summary>
+	/// Maneja el evento de clic en el botón aceptar, validando y guardando los datos de la persona
+	/// </summary>
 	private void OnAceptarPressed()
 	{
 		try
@@ -305,7 +320,12 @@ public partial class AgregarPersona : Node2D
 	}
 
 
-	// Copia la foto al proyecto y retorna su ruta
+	/// <summary>
+	/// Copia la foto seleccionada al directorio del proyecto con un nombre único basado en la cédula
+	/// </summary>
+	/// <param name="rutaOrigen">Ruta del archivo de foto original</param>
+	/// <param name="cedula">Cédula de la persona para nombrar el archivo</param>
+	/// <returns>Ruta relativa de Godot de la foto copiada o cadena vacía si hay error</returns>
 	private string CopiarFotoAlProyecto(string rutaOrigen, string cedula)
 	{
 		try
@@ -358,7 +378,10 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE CÉDULA ====================
 	
-	// Valida que la cédula es requerida
+	/// <summary>
+	/// Valida que el campo de cédula no esté vacío
+	/// </summary>
+	/// <returns>True si la cédula está ingresada, false en caso contrario</returns>
 	private bool ValidarCedulaRequerida()
 	{
 		if (string.IsNullOrWhiteSpace(cedulaInput.Text))
@@ -369,7 +392,10 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida la longitud de la cédula
+	/// <summary>
+	/// Valida que la longitud de la cédula esté dentro del rango permitido
+	/// </summary>
+	/// <returns>True si la longitud es válida, false en caso contrario</returns>
 	private bool ValidarLongitudCedula()
 	{
 		if (cedulaInput.Text.Length < 9 || cedulaInput.Text.Length > 12)
@@ -380,7 +406,10 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que la cédula sea única
+	/// <summary>
+	/// Valida que la cédula ingresada no esté ya registrada en el sistema
+	/// </summary>
+	/// <returns>True si la cédula es única, false si ya existe</returns>
 	private bool ValidarCedulaUnica()
 	{
 		if (cedulasExistentes.Contains(cedulaInput.Text))
@@ -393,7 +422,10 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE FAMILIARES Y TIPO DE PERSONA ====================
 	
-	// Valida que el cónyuge esté seleccionado
+	/// <summary>
+	/// Valida que se haya seleccionado un cónyuge cuando el tipo de persona es cónyuge
+	/// </summary>
+	/// <returns>True si la validación es correcta, false en caso contrario</returns>
 	private bool ValidarConyugeSeleccionado()
 	{
 		if (tipoDePersona.Selected == 1) // 1 = Cónyuge
@@ -409,7 +441,10 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que solo haya un fundador en el árbol
+	/// <summary>
+	/// Valida que solo exista un fundador en el árbol genealógico
+	/// </summary>
+	/// <returns>True si la validación es correcta, false si se intenta agregar un segundo fundador</returns>
 	private bool ValidarFundadorUnico()
 	{
 		var fundadoresExistentes = arbol.ObtenerPersonasFundadoras();
@@ -435,34 +470,30 @@ public partial class AgregarPersona : Node2D
 			// Si es Cónyuge, debe ser del fundador
 			else if (tipoDePersona.Selected == 1) // 1 = Cónyuge
 			{
-				// Extraer cédula del texto seleccionado en el OptionButton
 				string textoSeleccionado = conyugue.GetItemText(conyugue.Selected);
-				int inicioParentesis = textoSeleccionado.LastIndexOf('(');
-				int finParentesis = textoSeleccionado.LastIndexOf(')');
+				string cedulaConyugue = ExtraerCedulaDeTexto(textoSeleccionado);
 
-				if (inicioParentesis > 0 && finParentesis > inicioParentesis)
+				if (!string.IsNullOrEmpty(cedulaConyugue))
 				{
-					string cedulaConyugue = textoSeleccionado.Substring(
-						inicioParentesis + 1,
-						finParentesis - inicioParentesis - 1
-					).Trim();
-
-					// Buscar en personasCreadas
 					Persona conyugueSeleccionado = personasCreadas.Find(p => p.Cedula == cedulaConyugue);
-
+					
 					if (conyugueSeleccionado == null || conyugueSeleccionado.Cedula != fundadorExistente.Cedula)
 					{
 						MostrarError("Ya existe un fundador. Solo se permite agregar su cónyuge.");
 						return false;
 					}
 				}
+
 			}
 		}
 		
 		return true;
 	}
 
-	// Valida que los padres estén seleccionados
+	/// <summary>
+	/// Valida que ambos padres estén seleccionados cuando ya existen fundadores en el árbol
+	/// </summary>
+	/// <returns>True si la validación es correcta, false en caso contrario</returns>
 	private bool ValidarPadresSeleccionados()
 	{
 		if (tipoDePersona.Selected == 0) 
@@ -489,7 +520,10 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE NOMBRE ====================
 	
-	// Valida que el nombre sea requerido
+	/// <summary>
+	/// Valida que el campo de nombre no esté vacío
+	/// </summary>
+	/// <returns>True si el nombre está ingresado, false en caso contrario</returns>
 	private bool ValidarNombreRequerido()
 	{
 		if (string.IsNullOrWhiteSpace(nombreInput.Text))
@@ -500,7 +534,10 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que el nombre no contenga números
+	/// <summary>
+	/// Valida que el nombre no contenga caracteres numéricos
+	/// </summary>
+	/// <returns>True si el nombre es válido, false si contiene números</returns>
 	private bool ValidarNombreSinNumeros()
 	{
 		bool tieneNumeros = false;
@@ -522,7 +559,12 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que el apellido esté presente
+	/// <summary>
+	/// Valida que el nombre incluya al menos un apellido y extrae nombre y apellido
+	/// </summary>
+	/// <param name="nombre">Variable de salida con el nombre de la persona</param>
+	/// <param name="apellido">Variable de salida con el apellido de la persona</param>
+	/// <returns>True si tiene apellido, false en caso contrario</returns>
 	private bool ValidarApellidoPresente(out string nombre, out string apellido)
 	{
 		string[] nombreCompleto = nombreInput.Text.Trim().Split(' ');
@@ -540,7 +582,11 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE FECHA ====================
 	
-	// Valida el formato de la fecha de nacimiento
+	/// <summary>
+	/// Valida que el formato de la fecha de nacimiento sea correcto
+	/// </summary>
+	/// <param name="fechaNac">Variable de salida con la fecha de nacimiento parseada</param>
+	/// <returns>True si el formato es válido, false en caso contrario</returns>
 	private bool ValidarFormatoFechaNacimiento(out DateTime fechaNac)
 	{
 		if (!DateTime.TryParse(fechaInput.Text, out fechaNac))
@@ -551,7 +597,11 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que la fecha de nacimiento no sea futura
+	/// <summary>
+	/// Valida que la fecha de nacimiento no sea una fecha futura
+	/// </summary>
+	/// <param name="fechaNac">Fecha de nacimiento a validar</param>
+	/// <returns>True si la fecha es válida, false si es futura</returns>
 	private bool ValidarFechaNoFutura(DateTime fechaNac)
 	{
 		if (fechaNac > DateTime.Today)
@@ -562,7 +612,12 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida el formato de la fecha de fallecimiento
+	/// <summary>
+	/// Valida el formato de la fecha de fallecimiento y que sea posterior al nacimiento
+	/// </summary>
+	/// <param name="fechaNac">Fecha de nacimiento de la persona</param>
+	/// <param name="fechaFallecimiento">Variable de salida con la fecha de fallecimiento parseada</param>
+	/// <returns>True si la validación es correcta, false en caso contrario</returns>
 	private bool ValidarFormatoFechaFallecimiento(DateTime fechaNac, out DateTime? fechaFallecimiento)
 	{
 		fechaFallecimiento = null;
@@ -590,7 +645,10 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE GÉNERO ====================
 	
-	// Valida que el género esté seleccionado
+	/// <summary>
+	/// Valida que se haya seleccionado un género para la persona
+	/// </summary>
+	/// <returns>True si hay un género seleccionado, false en caso contrario</returns>
 	private bool ValidarGeneroSeleccionado()
 	{
 		if (opcionesGenero.Selected == 0)
@@ -603,7 +661,11 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE EDAD ====================
 	
-	// Valida que la edad sea un número válido
+	/// <summary>
+	/// Valida que la edad ingresada sea un número válido
+	/// </summary>
+	/// <param name="edad">Variable de salida con la edad parseada</param>
+	/// <returns>True si la edad es un número válido, false en caso contrario</returns>
 	private bool ValidarEdadNumerica(out int edad)
 	{
 		if (!int.TryParse(edadInput.Text, out edad))
@@ -614,7 +676,11 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que la edad esté dentro del rango permitido
+	/// <summary>
+	/// Valida que la edad esté dentro del rango permitido (0-150 años)
+	/// </summary>
+	/// <param name="edad">Edad a validar</param>
+	/// <returns>True si la edad está en el rango, false en caso contrario</returns>
 	private bool ValidarRangoEdad(int edad)
 	{
 		if (edad < 0 || edad > 150)
@@ -625,7 +691,11 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que la edad sea coherente con la de los padres
+	/// <summary>
+	/// Valida que la edad de la persona sea menor que la edad de sus padres
+	/// </summary>
+	/// <param name="edad">Edad a validar</param>
+	/// <returns>True si la edad es coherente, false en caso contrario</returns>
 	private bool ValidarEdadCoherenteConPadres(int edad)
 	{
 		if (tipoDePersona.Selected == 0)
@@ -651,7 +721,12 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Valida que la edad coincida con la fecha de nacimiento
+	/// <summary>
+	/// Valida que la edad ingresada coincida con la edad calculada a partir de la fecha de nacimiento
+	/// </summary>
+	/// <param name="edad">Edad ingresada manualmente</param>
+	/// <param name="fechaNac">Fecha de nacimiento para calcular la edad</param>
+	/// <returns>True si la edad coincide, false en caso contrario</returns>
 	private bool ValidarEdadCoincideConFechaNacimiento(int edad, DateTime fechaNac)
 	{
 		int edadCalculada = DateTime.Today.Year - fechaNac.Year;
@@ -669,7 +744,12 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE COORDENADAS ====================
 	
-	// Valida las coordenadas ingresadas
+	/// <summary>
+	/// Valida que las coordenadas ingresadas sean números válidos
+	/// </summary>
+	/// <param name="latitud">Variable de salida con la latitud parseada</param>
+	/// <param name="longitud">Variable de salida con la longitud parseada</param>
+	/// <returns>True si ambas coordenadas son válidas, false en caso contrario</returns>
 	private bool ValidarCoordenadas(out double latitud, out double longitud)
 	{
 		if (!double.TryParse(coordYInput.Text, out latitud))
@@ -690,7 +770,11 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== VALIDACIONES DE FOTO ====================
 	
-	// Valida y copia la foto al proyecto
+	/// <summary>
+	/// Valida que la foto exista y la copia al directorio del proyecto
+	/// </summary>
+	/// <param name="rutaFotoFinal">Variable de salida con la ruta final de la foto en el proyecto</param>
+	/// <returns>True si la validación y copia son exitosas, false en caso contrario</returns>
 	private bool ValidarYCopiarFoto(out string rutaFotoFinal)
 	{
 		rutaFotoFinal = "";
@@ -724,7 +808,17 @@ public partial class AgregarPersona : Node2D
 
 	// ==================== MÉTODOS AUXILIARES ====================
 	
-	// Crea una nueva persona con los datos ingresados
+	/// <summary>
+	/// Crea una nueva instancia de Persona con los datos proporcionados
+	/// </summary>
+	/// <param name="nombre">Nombre de la persona</param>
+	/// <param name="apellido">Apellido de la persona</param>
+	/// <param name="fechaNac">Fecha de nacimiento</param>
+	/// <param name="edad">Edad actual</param>
+	/// <param name="latitud">Coordenada de latitud</param>
+	/// <param name="longitud">Coordenada de longitud</param>
+	/// <param name="rutaFotoFinal">Ruta de la fotografía</param>
+	/// <returns>Nueva instancia de Persona</returns>
 	private Persona CrearNuevaPersona(string nombre, string apellido, DateTime fechaNac, int edad, double latitud, double longitud, string rutaFotoFinal)
 	{
 		if (tipoDePersona.Selected == 1)
@@ -757,7 +851,32 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Configura el estado de la persona (vivo o fallecido)
+	/// <summary>
+	/// Extrae la cédula del texto de un item del OptionButton
+	/// </summary>
+	/// <param name="textoItem">Texto del item en formato "Nombre (Cédula)"</param>
+	/// <returns>La cédula extraída o cadena vacía si no se encuentra</returns>
+	private string ExtraerCedulaDeTexto(string textoItem)
+	{
+		int inicioParentesis = textoItem.LastIndexOf('(');
+		int finParentesis = textoItem.LastIndexOf(')');
+		
+		if (inicioParentesis > 0 && finParentesis > inicioParentesis)
+		{
+			return textoItem.Substring(
+				inicioParentesis + 1,
+				finParentesis - inicioParentesis - 1
+			).Trim();
+		}
+		
+		return "";
+	}
+
+	/// <summary>
+	/// Configura el estado vital de la persona y su fecha de fallecimiento si aplica
+	/// </summary>
+	/// <param name="persona">Persona a configurar</param>
+	/// <param name="fechaFallecimiento">Fecha de fallecimiento opcional</param>
 	private void ConfigurarEstadoPersona(Persona persona, DateTime? fechaFallecimiento)
 	{
 		persona.EstaVivo = vivoCheck.ButtonPressed;
@@ -767,7 +886,10 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Configura el género de la persona
+	/// <summary>
+	/// Configura el género de la persona según la selección del formulario
+	/// </summary>
+	/// <param name="persona">Persona a configurar</param>
 	private void ConfigurarGenero(Persona persona)
 	{
 		if (opcionesGenero.Selected == 1)
@@ -780,7 +902,11 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Valida que la persona esté completa y sin errores
+	/// <summary>
+	/// Valida que la persona cumpla con todos los requisitos necesarios
+	/// </summary>
+	/// <param name="persona">Persona a validar</param>
+	/// <returns>True si la persona es válida, false en caso contrario</returns>
 	private bool ValidarPersonaCompleta(Persona persona)
 	{
 		if (!persona.EsValido())
@@ -792,7 +918,10 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Registra una nueva persona en las listas correspondientes
+	/// <summary>
+	/// Registra una nueva persona en las listas del sistema
+	/// </summary>
+	/// <param name="persona">Persona a registrar</param>
 	private void RegistrarPersona(Persona persona)
 	{
 		cedulasExistentes.Add(cedulaInput.Text);
@@ -805,7 +934,10 @@ public partial class AgregarPersona : Node2D
 			mujeres.Add(persona);
 	}
 
-	// Establece las relaciones familiares de la persona
+	/// <summary>
+	/// Establece las relaciones familiares de la persona (padres o cónyuge)
+	/// </summary>
+	/// <param name="persona">Persona a la que se le establecerán las relaciones</param>
 	private void EstablecerRelacionesFamiliares(Persona persona)
 	{
 		if (tipoDePersona.Selected == 0)
@@ -818,7 +950,10 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Agrega la persona al árbol genealógico y al grafo
+	/// <summary>
+	/// Agrega la persona al árbol genealógico y al grafo de relaciones
+	/// </summary>
+	/// <param name="persona">Persona a agregar</param>
 	private void AgregarAlArbolYGrafo(Persona persona)
 	{
 		arbol.AgregarPersona(persona);
@@ -828,7 +963,10 @@ public partial class AgregarPersona : Node2D
 		grafo.ConstruirAristas();
 	}
 
-	// Actualiza la interfaz con los datos de la nueva persona
+	/// <summary>
+	/// Actualiza la interfaz con la nueva persona agregada
+	/// </summary>
+	/// <param name="persona">Persona que fue agregada</param>
 	private void ActualizarInterfaz(Persona persona)
 	{
 		GD.Print("\n=== Intentando actualizar visualización ===");
@@ -857,7 +995,10 @@ public partial class AgregarPersona : Node2D
 		GD.Print($"Total personas: {personasCreadas.Count}");
 	}
 
-	// Muestra un mensaje de error en un cuadro de diálogo
+	/// <summary>
+	/// Muestra un mensaje de error en un cuadro de diálogo
+	/// </summary>
+	/// <param name="mensaje">Mensaje de error a mostrar</param>
 	private void MostrarError(string mensaje)
 	{
 		dialogoError.DialogText = mensaje;
@@ -865,14 +1006,18 @@ public partial class AgregarPersona : Node2D
 		GD.PrintErr($"Error: {mensaje}");
 	}
 
-	// Actualiza todas las listas desplegables
+	/// <summary>
+	/// Actualiza todas las listas desplegables del formulario
+	/// </summary>
 	private void ActualizarTodasLasListas()
 	{
 		ActualizarListaPadres();
 		ActualizarListaConyuges();
 	}
 
-	// Actualiza la lista de padres disponibles
+	/// <summary>
+	/// Actualiza las listas desplegables de padre y madre disponibles
+	/// </summary>
 	private void ActualizarListaPadres()
 	{
 		opcionesPadre.Clear();
@@ -897,7 +1042,9 @@ public partial class AgregarPersona : Node2D
 
 	}
 
-	// Actualiza la lista de cónyuges disponibles
+	/// <summary>
+	/// Actualiza la lista desplegable de cónyuges disponibles según el género seleccionado
+	/// </summary>
 	private void ActualizarListaConyuges()
 	{
 		// Guardar la selección actual antes de limpiar
@@ -912,18 +1059,10 @@ public partial class AgregarPersona : Node2D
 		
 		if (seleccionActual > 0 && !string.IsNullOrEmpty(textoSeleccionado))
 		{
-			// Extraer cédula de la selección actual
-			int inicioParentesis = textoSeleccionado.LastIndexOf('(');
-			int finParentesis = textoSeleccionado.LastIndexOf(')');
+			string cedulaSeleccionada = ExtraerCedulaDeTexto(textoSeleccionado);
 			
-			if (inicioParentesis > 0 && finParentesis > inicioParentesis)
+			if (!string.IsNullOrEmpty(cedulaSeleccionada))
 			{
-				string cedulaSeleccionada = textoSeleccionado.Substring(
-					inicioParentesis + 1,
-					finParentesis - inicioParentesis - 1
-				).Trim();
-				
-				// Verificar si esa persona está en la lista de disponibles
 				seleccionSigueValida = personasDisponibles.Any(p => p.Cedula == cedulaSeleccionada);
 			}
 		}
@@ -946,7 +1085,10 @@ public partial class AgregarPersona : Node2D
 		// Si la selección sigue válida, no hacemos nada (mantiene la selección actual)
 	}
 
-	// Obtiene las personas disponibles para ser cónyuges
+	/// <summary>
+	/// Obtiene la lista de personas disponibles para ser cónyuges según el género seleccionado
+	/// </summary>
+	/// <returns>Lista de personas disponibles como cónyuges</returns>
 	private List<Persona> ObtenerPersonasParaConyuge()
 	{
 		int generoSeleccionado = opcionesGenero.Selected;
@@ -965,7 +1107,10 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Verifica que los padres seleccionados sean cónyuges entre sí
+	/// <summary>
+	/// Verifica que los padres seleccionados sean cónyuges entre sí
+	/// </summary>
+	/// <returns>True si los padres son cónyuges o si no aplica la validación, false en caso contrario</returns>
 	private Boolean VerificarPadresConyugues()
 	{
 		Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
@@ -985,7 +1130,10 @@ public partial class AgregarPersona : Node2D
 		return true;
 	}
 
-	// Establece los padres de una nueva persona
+	/// <summary>
+	/// Establece las relaciones de padre y madre para una persona
+	/// </summary>
+	/// <param name="nuevaPersona">Persona a la que se le asignarán los padres</param>
 	private void EstablecerPadres(Persona nuevaPersona)
 	{
 		Persona padre = BuscarPersonaEnLista(hombres, opcionesPadre.Selected);
@@ -997,18 +1145,20 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Establece el cónyuge de una nueva persona
+	/// <summary>
+	/// Establece la relación de cónyuge entre dos personas
+	/// </summary>
+	/// <param name="nuevaPersona">Persona a la que se le asignará el cónyuge</param>
 	private void EstablecerConyuge(Persona nuevaPersona)
 	{
 		string textoSeleccionado = conyugue.GetItemText(conyugue.Selected);
+		string cedulaConyugue = ExtraerCedulaDeTexto(textoSeleccionado);
 
-		int inicioParentesis = textoSeleccionado.LastIndexOf('(');
-		int finParentesis = textoSeleccionado.LastIndexOf(')');
-
-		string cedulaConyugue = textoSeleccionado.Substring(
-			inicioParentesis + 1,
-			finParentesis - inicioParentesis - 1
-		).Trim();
+		if (string.IsNullOrEmpty(cedulaConyugue))
+		{
+			GD.PrintErr("Error: No se pudo extraer la cédula del cónyuge seleccionado");
+			return;
+		}
 
 		//encontrar conyugue por medio de lista que contiene a todas las personas creadas
 		Persona conyugeSeleccionado = personasCreadas.Find(p => p.Cedula == cedulaConyugue);
@@ -1023,7 +1173,12 @@ public partial class AgregarPersona : Node2D
 		conyugeSeleccionado.Conyuge = nuevaPersona;
 	}
 
-	// Busca una persona en la lista según el índice seleccionado
+	/// <summary>
+	/// Busca una persona en una lista según el índice seleccionado en un OptionButton
+	/// </summary>
+	/// <param name="lista">Lista donde buscar la persona</param>
+	/// <param name="indiceSeleccionado">Índice seleccionado en el OptionButton</param>
+	/// <returns>La persona encontrada o null si no existe</returns>
 	private Persona BuscarPersonaEnLista(List<Persona> lista, int indiceSeleccionado)
 	{
 		if (indiceSeleccionado <= 0 || indiceSeleccionado > lista.Count)
@@ -1037,7 +1192,9 @@ public partial class AgregarPersona : Node2D
 	/// GESTIÓN DE CONTROLES DE INTERFAZ
 	/// </summary>
 
-	// Maneja el evento de marcar como vivo
+	/// <summary>
+	/// Maneja el evento cuando se marca el checkbox de vivo
+	/// </summary>
 	private void OnVivoPressed()
 	{
 		if (vivoCheck.ButtonPressed)
@@ -1048,7 +1205,9 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Maneja el evento de marcar como fallecido
+	/// <summary>
+	/// Maneja el evento cuando se marca el checkbox de fallecido
+	/// </summary>
 	private void OnMuertoPressed()
 	{
 		if (muertoCheck.ButtonPressed)
@@ -1059,19 +1218,28 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Maneja el cambio de tipo de persona en el formulario
+	/// <summary>
+	/// Maneja el cambio de selección en el tipo de persona (familiar o cónyuge)
+	/// </summary>
+	/// <param name="index">Índice de la opción seleccionada</param>
 	private void OnTipoPersonaChanged(long index)
 	{
 		ConfigurarVisibilidadCampos();
 		ActualizarListaConyuges();
 	}
 
-	// Maneja el cambio de género en el formulario
+	/// <summary>
+	/// Maneja el cambio de selección en el género de la persona
+	/// </summary>
+	/// <param name="index">Índice de la opción seleccionada</param>
 	private void OnGeneroChanged(long index)
 	{
 		ActualizarListaConyuges();
 	}
 
+	/// <summary>
+	/// Configura la visibilidad de los campos según el tipo de persona seleccionado
+	/// </summary>
 	private void ConfigurarVisibilidadCampos()
 	{
 		bool esFamiliar = tipoDePersona.Selected == 0; //0 es familiar y 1 es el cónyuge
@@ -1087,6 +1255,9 @@ public partial class AgregarPersona : Node2D
 		conyugue.Visible = !esFamiliar;
 	}
 
+	/// <summary>
+	/// Configura el tamaño de todos los dropdowns del formulario
+	/// </summary>
 	private void ConfigurarTamañoDropdowns()
 	{
 		// Configurar tamaño fijo para los botones
@@ -1097,6 +1268,11 @@ public partial class AgregarPersona : Node2D
 		ConfigurarDrop(conyugue, new Vector2(170, 28));	
 	}
 
+	/// <summary>
+	/// Configura el tamaño y comportamiento de un OptionButton específico
+	/// </summary>
+	/// <param name="drop">OptionButton a configurar</param>
+	/// <param name="size">Tamaño deseado para el dropdown</param>
 	private void ConfigurarDrop(OptionButton drop, Vector2 size)
 	{
 		drop.CustomMinimumSize = size;
@@ -1117,19 +1293,25 @@ public partial class AgregarPersona : Node2D
 	}
 
 
-	// Maneja el evento de cancelar y limpia los campos
+	/// <summary>
+	/// Maneja el evento de clic en el botón cancelar y limpia todos los campos
+	/// </summary>
 	private void OnCancelarPressed()
 	{
 		LimpiarCampos();
 	}
 
-	// Maneja el evento de volver al menú principal
+	/// <summary>
+	/// Maneja el evento de clic en el botón volver y regresa al menú principal
+	/// </summary>
 	private void OnVolverPressed()
 	{
 		GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
 	}
 
-	// Limpia todos los campos del formulario
+	/// <summary>
+	/// Limpia todos los campos del formulario y restablece los valores por defecto
+	/// </summary>
 	private void LimpiarCampos()
 	{
 		nombreInput.Text = "";
@@ -1163,7 +1345,9 @@ public partial class AgregarPersona : Node2D
 		ConfigurarVisibilidadCampos();
 	}
 
-	// Maneja el evento de cargar una foto desde el sistema
+	/// <summary>
+	/// Maneja el evento de clic en el botón de cargar foto, abriendo el diálogo de selección de archivos
+	/// </summary>
 	private void OnCargarFotoPressed()
 	{
 		if (dialogoSeleccionarFoto != null)
@@ -1184,7 +1368,10 @@ public partial class AgregarPersona : Node2D
 		}
 	}
 
-	// Maneja la selección de una foto desde el cuadro de diálogo
+	/// <summary>
+	/// Maneja la selección de una foto desde el diálogo de archivos
+	/// </summary>
+	/// <param name="ruta">Ruta del archivo de foto seleccionado</param>
 	private void OnFotoSeleccionada(string ruta)
 	{
 		GD.Print($"📸 Ruta recibida del FileDialog: {ruta}");

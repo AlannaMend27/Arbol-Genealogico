@@ -48,9 +48,11 @@ public partial class MapaUI : Node2D
 	private Node2D dibujoContainer;
 
 	// Área del mapa en la pantalla (área visible donde se puede hacer zoom)
-	private Rect2 _mapaArea = new Rect2(8, 95, 1150, 680); 
 	private Vector2 _mapaContentSize = new Vector2(1152, 684);
 
+	/// <summary>
+	/// Inicializa la interfaz del mapa, configura el zoom, carga el grafo y crea los marcadores de las personas
+	/// </summary>
 	public override void _Ready()
 	{
 		ConfigurarEstructuraZoom();
@@ -95,6 +97,7 @@ public partial class MapaUI : Node2D
 		ActualizarLabelsInfo();
 		ReconstruirMarcadores();
 
+		// panel de informacion de la pesona seleccionada
 		panelInfo = GetNodeOrNull<Panel>("PanelInfoPersona");
 		if (panelInfo != null)
 		{
@@ -107,6 +110,9 @@ public partial class MapaUI : Node2D
 		}
 	}
 
+	/// <summary>
+	/// Configura la estructura de nodos necesaria para el sistema de zoom y clipping del mapa
+	/// </summary>
 	private void ConfigurarEstructuraZoom()
 	{
 		_viewportClip = GetNodeOrNull<Control>("ViewportClip");
@@ -115,6 +121,7 @@ public partial class MapaUI : Node2D
 			_viewportClip = new Control();
 			_viewportClip.Name = "ViewportClip";
 			_viewportClip.ClipContents = true;
+
 			// Posición fija donde queremos que esté el área visible del mapa
 			_viewportClip.Position = new Vector2(0, 95);
 			_viewportClip.Size = new Vector2(1150, 680); // Agrandado para ver más mapa
@@ -142,6 +149,10 @@ public partial class MapaUI : Node2D
 		}
 	}
 
+	/// <summary>
+	/// Procesa las entradas de zoom y paneo del mapa en cada frame
+	/// </summary>
+	/// <param name="delta">Tiempo transcurrido desde el último frame</param>
 	public override void _Process(double delta)
 	{
 		HandleZoomInput();
@@ -150,11 +161,18 @@ public partial class MapaUI : Node2D
 		ApplyTransform();
 	}
 
+	/// <summary>
+	/// Maneja los eventos de entrada del usuario para interacción con el mapa
+	/// </summary>
+	/// <param name="event">Evento de entrada a procesar</param>
 	public override void _Input(InputEvent @event)
 	{
 		HandleMouseInteraction(@event);
 	}
 
+	/// <summary>
+	/// Procesa las entradas de teclado para controlar el zoom del mapa
+	/// </summary>
 	private void HandleZoomInput()
 	{
 		if (Input.IsActionJustPressed("ui_page_up"))
@@ -163,6 +181,10 @@ public partial class MapaUI : Node2D
 			ZoomOut();
 	}
 
+	/// <summary>
+	/// Maneja las interacciones del mouse para zoom con rueda y arrastre del mapa
+	/// </summary>
+	/// <param name="event">Evento de entrada del mouse</param>
 	private void HandleMouseInteraction(InputEvent @event)
 	{
 		if (@event is InputEventMouseButton mouseButton)
@@ -211,6 +233,10 @@ public partial class MapaUI : Node2D
 		}
 	}
 
+	/// <summary>
+	/// Procesa las entradas de teclado para mover el mapa en las cuatro direcciones
+	/// </summary>
+	/// <param name="delta">Tiempo transcurrido desde el último frame</param>
 	private void HandlePanInput(double delta)
 	{
 		Vector2 panDirection = Vector2.Zero;
@@ -232,6 +258,11 @@ public partial class MapaUI : Node2D
 		}
 	}
 
+	/// <summary>
+	/// Realiza zoom hacia la posición del mouse manteniendo el punto bajo el cursor fijo
+	/// </summary>
+	/// <param name="mouseScreenPos">Posición del mouse en la pantalla</param>
+	/// <param name="zoomIn">True para acercar, false para alejar</param>
 	private void ZoomTowardsMouse(Vector2 mouseScreenPos, bool zoomIn)
 	{
 		// Posición del mouse relativa al ViewportClip
@@ -245,9 +276,6 @@ public partial class MapaUI : Node2D
 			ZoomIn();
 		else
 			ZoomOut();
-		
-		// Calcular el factor de cambio de zoom basado en el target
-		float zoomRatio = _targetZoom / oldTargetZoom;
 		
 		// Punto del mapa bajo el mouse en el espacio del mapa
 		// Convertir la posición del mouse a coordenadas del mapa
@@ -265,23 +293,36 @@ public partial class MapaUI : Node2D
 		ClampPan();
 	}
 
+	/// <summary>
+	/// Aumenta el nivel de zoom del mapa dentro de los límites establecidos
+	/// </summary>
 	private void ZoomIn()
 	{
 		_targetZoom += ZoomSpeed;
 		_targetZoom = Mathf.Clamp(_targetZoom, ZoomMin, ZoomMax);
 	}
 
+	/// <summary>
+	/// Disminuye el nivel de zoom del mapa dentro de los límites establecidos
+	/// </summary>
 	private void ZoomOut()
 	{
 		_targetZoom -= ZoomSpeed;
 		_targetZoom = Mathf.Clamp(_targetZoom, ZoomMin, ZoomMax);
 	}
 
+	/// <summary>
+	/// Aplica interpolación suave al zoom actual hacia el zoom objetivo
+	/// </summary>
+	/// <param name="delta">Tiempo transcurrido desde el último frame</param>
 	private void SmoothZoom(double delta)
 	{
 		_currentZoom = Mathf.Lerp(_currentZoom, _targetZoom, ZoomSmoothness * (float)delta);
 	}
 
+	/// <summary>
+	/// Aplica la transformación de escala y posición al contenedor del mapa
+	/// </summary>
 	private void ApplyTransform()
 	{
 		if (_mapaContainer == null) return;
@@ -290,6 +331,9 @@ public partial class MapaUI : Node2D
 		_mapaContainer.Position = _panOffset;
 	}
 
+	/// <summary>
+	/// Limita el desplazamiento del mapa para evitar que se salga del área visible
+	/// </summary>
 	private void ClampPan()
 	{
 		var mapSize = _mapaContentSize * _targetZoom; // Volver a usar targetZoom
@@ -318,6 +362,9 @@ public partial class MapaUI : Node2D
 		_panOffset.Y = Mathf.Clamp(_panOffset.Y, minY, maxY);
 	}
 
+	/// <summary>
+	/// Restablece el zoom a su valor inicial y centra el mapa en su posición original
+	/// </summary>
 	public void ResetZoom()
 	{
 		_targetZoom = 1.0f;
@@ -325,6 +372,9 @@ public partial class MapaUI : Node2D
 		_panOffset = _initialPanOffset; // Volver al offset inicial en lugar de (0,0)
 	}
 
+	/// <summary>
+	/// Actualiza las etiquetas de la interfaz con las estadísticas del grafo (distancia promedio, par más cercano y más lejano)
+	/// </summary>
 	private void ActualizarLabelsInfo()
 	{
 		var (distancia, lejos, cerca) = grafo.ObtenerValoresUI();
@@ -342,6 +392,9 @@ public partial class MapaUI : Node2D
 			labelCerca.Text = cerca != string.Empty ? $"{cerca}" : "N/A";
 	}
 
+	/// <summary>
+	/// Elimina todos los marcadores existentes y los vuelve a crear con las personas actuales del grafo
+	/// </summary>
 	public void ReconstruirMarcadores()
 	{
 		foreach (var kv in marcadores)
@@ -359,6 +412,10 @@ public partial class MapaUI : Node2D
 		}
 	}
 
+	/// <summary>
+	/// Crea un marcador visual en el mapa para una persona específica con su foto y nombre
+	/// </summary>
+	/// <param name="persona">La persona para la cual crear el marcador</param>
 	private void CrearMarcador(Persona persona)
 	{
 		if (persona == null) return;
@@ -372,137 +429,39 @@ public partial class MapaUI : Node2D
 		var posicion = MapearCoordenadaAPunto(new Vector2((float)persona.Longitud, (float)persona.Latitud));
 		marcador.Position = posicion - marcador.Size / 2 + new Vector2(2, 0);
 
-		if (!string.IsNullOrEmpty(persona.RutaFotografia))
+		// Determinar la ruta de la foto a cargar
+		string rutaFoto = persona.RutaFotografia;
+		if (string.IsNullOrEmpty(rutaFoto))
 		{
-			// Agregar la foto en la ruta que especifico el usuario
-			var textureRect = new TextureRect();
-			textureRect.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
-			textureRect.Position = Vector2.Zero;
-			textureRect.Size = new Vector2(MARCADOR_SIZE, MARCADOR_SIZE);
-			textureRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-			textureRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered;
-
-			bool fotoOk = false;
-			try
+			// Usar foto por defecto según el género
+			if (persona.GeneroPersona == Persona.Genero.Masculino)
 			{
-				var image = Image.LoadFromFile(persona.RutaFotografia);
-				if (image != null)
-				{
-					var texture = ImageTexture.CreateFromImage(image);
-					textureRect.Texture = texture;
-					var shader = new Shader();
-					shader.Code = @"
-shader_type canvas_item;
-
-void fragment() {
-    vec2 uv = UV - vec2(0.5);
-    float dist = length(uv);
-    
-    if (dist > 0.5) {
-        COLOR = vec4(0.0);
-    } else {
-        COLOR = texture(TEXTURE, UV);
-    }
-}";
-					var material = new ShaderMaterial();
-					material.Shader = shader;
-					textureRect.Material = material;
-
-					fotoOk = true;
-				}
-			}
-			catch (Exception ex)
-			{
-				GD.PrintErr($"Error cargando foto {persona.RutaFotografia}: {ex.Message}");
-			}
-
-
-
-			if (fotoOk)
-			{
-				marcador.AddChild(textureRect);
-				marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Foto cargada)";
+				rutaFoto = "res://fotos_default/personaHombre.jpg";
 			}
 			else
 			{
-				var label = new Label();
-				label.Text = "📷";
-				label.SetAnchorsPreset(Control.LayoutPreset.Center);
-				marcador.AddChild(label);
-				marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Error al cargar foto)";
+				rutaFoto = "res://fotos_default/personaMujer.jpg";
 			}
+		}
+
+		// Intentar cargar la foto
+		bool fotoOk = CargarFotoEnMarcador(marcador, rutaFoto);
+		
+		// Configurar tooltip según el resultado
+		if (fotoOk)
+		{
+			marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}";
 		}
 		else
 		{
-			// Agregar foto por default
-			var textureRect = new TextureRect();
-			textureRect.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
-			textureRect.Position = Vector2.Zero;
-			textureRect.Size = new Vector2(MARCADOR_SIZE, MARCADOR_SIZE);
-			textureRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-			textureRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered;
-
-			bool fotoOk = false;
-			try
-			{
-				Image image = null ;
-
-				if (persona.GeneroPersona == Persona.Genero.Masculino)
-				{
-					image = Image.LoadFromFile("res://fotos_default/personaHombre.jpg");
-				}
-				else
-				{
-					image = Image.LoadFromFile("res://fotos_default/personaMujer.jpg");
-				}
-
-				if (image != null)
-				{
-					var texture = ImageTexture.CreateFromImage(image);
-					textureRect.Texture = texture;
-					var shader = new Shader();
-					shader.Code = @"
-shader_type canvas_item;
-
-void fragment() {
-    vec2 uv = UV - vec2(0.5);
-    float dist = length(uv);
-    
-    if (dist > 0.5) {
-        COLOR = vec4(0.0);
-    } else {
-        COLOR = texture(TEXTURE, UV);
-    }
-}";
-					var material = new ShaderMaterial();
-					material.Shader = shader;
-					textureRect.Material = material;
-
-					fotoOk = true;
-				}
-			}
-			catch (Exception ex)
-			{
-				GD.PrintErr($"Error cargando foto {persona.RutaFotografia}: {ex.Message}");
-			}
-
-			
-
-			if (fotoOk)
-			{
-				marcador.AddChild(textureRect);
-				marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Foto cargada)";
-			}
-			else
-			{
-				var label = new Label();
-				label.Text = "📷";
-				label.SetAnchorsPreset(Control.LayoutPreset.Center);
-				marcador.AddChild(label);
-				marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Error al cargar foto)";
-			}
+			var label = new Label();
+			label.Text = "📷";
+			label.SetAnchorsPreset(Control.LayoutPreset.Center);
+			marcador.AddChild(label);
+			marcador.TooltipText = $"{persona.NombreCompleto}\n{persona.Cedula}\n(Error al cargar foto)";
 		}
 
+		// Label del nombre de la persona
 		var labelNombre = new Label();
 		labelNombre.Text = persona.Nombre;
 		labelNombre.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
@@ -516,6 +475,7 @@ void fragment() {
 		labelNombre.AddThemeConstantOverride("outline_size", 1);
 		marcador.AddChild(labelNombre);
 
+		// Botón invisible para detectar clics
 		var btn = new Button();
 		btn.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
 		btn.Position = Vector2.Zero;
@@ -524,11 +484,65 @@ void fragment() {
 		btn.Pressed += () => OnMarcadorPressed(persona.Cedula);
 		marcador.AddChild(btn);
 
-		// Agregar al mapaTexture (que está dentro de MapaContainer y se escalará)
+		// Agregar al mapa
 		mapaTexture.AddChild(marcador);
 		marcadores[persona.Cedula] = marcador;
 	}
 
+	/// <summary>
+	/// Carga una imagen en un marcador aplicando un shader circular
+	/// </summary>
+	/// <param name="marcador">El control del marcador donde se agregará la imagen</param>
+	/// <param name="rutaFoto">Ruta del archivo de imagen a cargar</param>
+	/// <returns>True si la foto se cargó exitosamente, false en caso contrario</returns>
+	private bool CargarFotoEnMarcador(Control marcador, string rutaFoto)
+	{
+		try
+		{
+			var image = Image.LoadFromFile(rutaFoto);
+			if (image == null) return false;
+
+			var textureRect = new TextureRect();
+			textureRect.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+			textureRect.Position = Vector2.Zero;
+			textureRect.Size = new Vector2(MARCADOR_SIZE, MARCADOR_SIZE);
+			textureRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+			textureRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered;
+			textureRect.Texture = ImageTexture.CreateFromImage(image);
+
+			// Aplicar shader circular
+			var shader = new Shader();
+			shader.Code = @"
+	shader_type canvas_item;
+
+	void fragment() {
+		vec2 uv = UV - vec2(0.5);
+		float dist = length(uv);
+		
+		if (dist > 0.5) {
+			COLOR = vec4(0.0);
+		} else {
+			COLOR = texture(TEXTURE, UV);
+		}
+	}";
+			var material = new ShaderMaterial();
+			material.Shader = shader;
+			textureRect.Material = material;
+
+			marcador.AddChild(textureRect);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			GD.PrintErr($"Error cargando foto {rutaFoto}: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Muestra la información detallada de una persona en el panel de información de la interfaz
+	/// </summary>
+	/// <param name="cedula">Cédula de la persona cuya información se mostrará</param>
 	private void MostrarInfoPersona(string cedula)
 	{
 		var persona = grafo.ObtenerPersona(cedula);
@@ -562,6 +576,11 @@ void fragment() {
 		panelInfo.Visible = true;
 	}
 
+	/// <summary>
+	/// Convierte coordenadas geográficas (longitud, latitud) a coordenadas de píxeles en el mapa
+	/// </summary>
+	/// <param name="coord">Vector con longitud (X) y latitud (Y)</param>
+	/// <returns>Posición en píxeles en el mapa</returns>
 	private Vector2 MapearCoordenadaAPunto(Vector2 coord)
 	{
 		float longitud = coord.X;
@@ -573,10 +592,15 @@ void fragment() {
 		return new Vector2(x, y);
 	}
 
+	/// <summary>
+	/// Maneja el evento de clic en un marcador, mostrando líneas y distancias hacia todas las demás personas
+	/// </summary>
+	/// <param name="cedula">Cédula de la persona cuyo marcador fue clickeado</param>
 	private void OnMarcadorPressed(string cedula)
 	{
 		if (!marcadores.ContainsKey(cedula)) return;
 
+		// mostrar la informacion de la persona
 		ClearDibujos();
 		MostrarInfoPersona(cedula);
 
@@ -590,9 +614,11 @@ void fragment() {
 		{
 			if (kv.Key == cedula) continue;
 
+			// cacular centro del marcador destino
 			var destino = kv.Value;
 			var destinoCentro = destino.Position + destino.Size / 2;
 
+			// crear y dibujar linea amarilla
 			var linea = new Line2D();
 			linea.DefaultColor = Colors.Yellow;
 			linea.Width = LINE_WIDTH;
@@ -602,13 +628,16 @@ void fragment() {
 			linea.AddPoint(destinoCentro);
 			dibujoContainer.AddChild(linea);
 
+			// calcular distancia
 			var personaDestino = grafo.ObtenerPersona(kv.Key);
 			double distanciaKm = personaOrigen.CalcularDistancia(personaDestino);
 
+			// creacion de contenedor para etiqueta
 			var contenedor = new PanelContainer();
 			contenedor.Position = (origenCentro + destinoCentro) / 2 - new Vector2(30, 15);
 			contenedor.ZIndex = 10;
 
+			// darle formato al contenedor
 			var styleBox = new StyleBoxFlat();
 			styleBox.BgColor = Colors.White;
 			styleBox.SetCornerRadiusAll(3);
@@ -618,6 +647,7 @@ void fragment() {
 			styleBox.ContentMarginBottom = 2;
 			contenedor.AddThemeStyleboxOverride("panel", styleBox);
 
+			// muestra la distancia a la que se encuentra la personaen el contendeor
 			var etiqueta = new Label();
 			etiqueta.Text = $"{distanciaKm:F1} km";
 			etiqueta.AddThemeFontSizeOverride("font_size", 10);
@@ -625,11 +655,15 @@ void fragment() {
 			etiqueta.HorizontalAlignment = HorizontalAlignment.Center;
 			etiqueta.VerticalAlignment = VerticalAlignment.Center;
 
+			
 			contenedor.AddChild(etiqueta);
 			dibujoContainer.AddChild(contenedor);
 		}
 	}
 
+	/// <summary>
+	/// Elimina todas las líneas y etiquetas de distancia dibujadas en el mapa
+	/// </summary>
 	private void ClearDibujos()
 	{
 		foreach (var child in dibujoContainer.GetChildren())
@@ -639,11 +673,17 @@ void fragment() {
 		}
 	}
 
+	/// <summary>
+	/// Actualiza la visualización del mapa reconstruyendo todos los marcadores
+	/// </summary>
 	public void Refresh()
 	{
 		ReconstruirMarcadores();
 	}
 
+	/// <summary>
+	/// Maneja el evento del botón volver, regresando a la escena del menú principal
+	/// </summary>
 	private void OnVolverPressed()
 	{
 		GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
