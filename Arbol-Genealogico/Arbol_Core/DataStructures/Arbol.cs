@@ -5,6 +5,7 @@ using Arbol_Core.Models;
 
 namespace Arbol_Core.DataStructures
 {
+	// Clase que representa la estructura del árbol genealógico
 	public partial class Arbol
 	{
 		// Diccionario para acceso rápido a personas por cédula
@@ -23,7 +24,7 @@ namespace Arbol_Core.DataStructures
 			todasLasPersonas = new List<Persona>();
 		}
 
-		// Agregar una persona al árbol
+		// Agregar una persona al árbol genealógico
 		// La persona ya debe tener asignados su Padre y Madre (pueden ser null si es fundador)
 		public bool AgregarPersona(Persona nuevaPersona)
 		{
@@ -78,7 +79,7 @@ namespace Arbol_Core.DataStructures
 			return true;
 		}
 
-		//Actualzar la generacion de la persona de acuerdo a sus padres
+		// Actualiza la generación de una persona basándose en sus padres
 		private void ActualizarGeneracion(Persona persona)
 		{
 			if (persona == null)
@@ -99,7 +100,7 @@ namespace Arbol_Core.DataStructures
 			persona.Generacion = Math.Max(generacionPadre, generacionMadre) + 1;
 		}	
 		
-		//Actualizar la generacion de la persona de acuerdo a su conyugue (para tipo de persona conyugue)
+		// Actualiza la generación de una persona basándose en su cónyuge
 		private void ActualizarGeneracionConyugue(Persona persona)
         {
 			if (persona == null)
@@ -115,7 +116,7 @@ namespace Arbol_Core.DataStructures
 			persona.Generacion = persona.Conyuge.Generacion; 
         }
 		
-		// Buscar una persona por su cédula
+		// Busca una persona en el árbol por su cédula
 		public Persona BuscarPorCedula(string cedula)
 		{
 			if (string.IsNullOrEmpty(cedula))
@@ -125,13 +126,13 @@ namespace Arbol_Core.DataStructures
 			return persona;
 		}
 		
-		// Obtener todas las personas del árbol
+		// Obtiene una lista de todas las personas en el árbol
 		public List<Persona> ObtenerTodasLasPersonas()
 		{
 			return new List<Persona>(todasLasPersonas);
 		}
 		
-		// Obtener las personas fundadoras (generación 0)
+		// Obtiene una lista de las personas fundadoras (generación 0)
 		public List<Persona> ObtenerPersonasFundadoras()
 		{
 			var fundadores = new List<Persona>();
@@ -147,7 +148,7 @@ namespace Arbol_Core.DataStructures
 			return fundadores;
 		}
 		
-		// Limpiar todo el árbol
+		// Limpia el árbol eliminando todas las personas
 		public void LimpiarArbol()
 		{
 			personasPorCedula.Clear();

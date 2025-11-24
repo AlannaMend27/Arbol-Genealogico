@@ -5,12 +5,13 @@ using Arbol_Core.Models;
 
 namespace Arbol_Core.DataStructures
 {
-	// nodo del grafo que representa a una persona y sus conexiones
+	// Clase que representa un nodo en el grafo, asociado a una persona
 	public class NodoGrafo
 	{
 		public Persona Persona { get; set; }
 		public Dictionary<string, AristaGrafo> Aristas { get; set; }
 
+		// Constructor que inicializa el nodo con una persona
 		public NodoGrafo(Persona persona)
 		{
 			Persona = persona;
@@ -18,12 +19,13 @@ namespace Arbol_Core.DataStructures
 		}
 	}
 
-	// arista del grafo que conecta dos personas con su distancia
+	// Clase que representa una arista en el grafo, conectando dos personas
 	public class AristaGrafo
 	{
 		public Persona PersonaDestino { get; set; }
 		public double Distancia { get; set; }
 
+		// Constructor que inicializa la arista con una persona destino y una distancia
 		public AristaGrafo(Persona destino, double distancia)
 		{
 			PersonaDestino = destino;
@@ -31,18 +33,20 @@ namespace Arbol_Core.DataStructures
 		}
 	}
 
-	// conecta a todas las personas entre sí
+	// Clase que representa el grafo, conectando todas las personas entre sí
 	public class Grafo
 	{
 		private Dictionary<string, NodoGrafo> nodos;
 		private static Grafo instancia;
 		public int CantidadNodos => nodos.Count;
 
+		// Constructor que inicializa las estructuras internas del grafo
 		public Grafo()
 		{
 			nodos = new Dictionary<string, NodoGrafo>();
 		}
 
+		// Obtiene la instancia única del grafo (patrón singleton)
 		public static Grafo ObtenerInstancia()
 		{
 			if (instancia == null)
@@ -52,6 +56,7 @@ namespace Arbol_Core.DataStructures
 			return instancia;
 		}
 
+		// Agrega un nodo al grafo asociado a una persona
 		public void AgregarNodo(Persona persona)
 		{
 			if (persona == null || nodos.ContainsKey(persona.Cedula))
@@ -60,7 +65,7 @@ namespace Arbol_Core.DataStructures
 			nodos[persona.Cedula] = new NodoGrafo(persona);
 		}
 
-		// conectar todos los nodos entre sí
+		// Construye las aristas entre todos los nodos del grafo
 		public void ConstruirAristas()
 		{
 			var listaPersonas = nodos.Values.Select(n => n.Persona).ToList();
@@ -80,7 +85,7 @@ namespace Arbol_Core.DataStructures
 			}
 		}
 
-		// distancia entre dos personas específicas
+		// Obtiene la distancia entre dos personas específicas
 		public double ObtenerDistancia(string cedula1, string cedula2)
 		{
 			if (!nodos.ContainsKey(cedula1) || !nodos.ContainsKey(cedula2))
@@ -93,7 +98,7 @@ namespace Arbol_Core.DataStructures
 			return -1;
 		}
 
-		// distancias desde una persona hacia las demás
+		// Obtiene las distancias desde una persona hacia las demás
 		public Dictionary<Persona, double> ObtenerDistanciasDesde(string cedula)
 		{
 			var distancias = new Dictionary<Persona, double>();
@@ -110,7 +115,7 @@ namespace Arbol_Core.DataStructures
 			return distancias;
 		}
 
-		// más lejos 
+		// Obtiene el par de personas más lejanas entre sí
 		public (Persona persona1, Persona persona2, double distancia) ObtenerParMasLejano()
 		{
 			Persona p1 = null, p2 = null;
@@ -134,7 +139,7 @@ namespace Arbol_Core.DataStructures
 			return (p1, p2, maxDistancia);
 		}
 
-		// más cerca uno del otro
+		// Obtiene el par de personas más cercanas entre sí
 		public (Persona persona1, Persona persona2, double distancia) ObtenerParMasCercano()
 		{
 			Persona p1 = null, p2 = null;
@@ -158,7 +163,7 @@ namespace Arbol_Core.DataStructures
 			return (p1, p2, minDistancia == double.MaxValue ? 0 : minDistancia);
 		}
 
-		// distancia promedio (en píxeles, igual a como se calcula en MapaUI)
+		// Calcula la distancia promedio entre todas las personas del grafo
 		public double CalcularDistanciaPromedio()
 		{
 			if (nodos.Count < 2)
@@ -187,7 +192,7 @@ namespace Arbol_Core.DataStructures
 		}
 		
 
-		// mostrar en ui
+		// Obtiene valores formateados para mostrar en la interfaz de usuario
 		public (string distancia, string lejos, string cerca) ObtenerValoresUI()
 		{
 			var masLejanos = ObtenerParMasLejano();
@@ -207,19 +212,19 @@ namespace Arbol_Core.DataStructures
 			return (distanciaTexto, lejosTexto, cercaTexto);
 		}
 
-		// obtener todas las personas del grafo
+		// Obtiene una lista de todas las personas en el grafo
 		public List<Persona> ObtenerTodasLasPersonas()
 		{
 			return nodos.Values.Select(n => n.Persona).ToList();
 		}
 
-		// verificar si una persona existe en el grafo
+		// Verifica si una persona existe en el grafo por su cédula
 		public bool ExistePersona(string cedula)
 		{
 			return nodos.ContainsKey(cedula);
 		}
 
-		// obtener una persona específica por cédula
+		// Obtiene una persona específica por su cédula
 		public Persona ObtenerPersona(string cedula)
 		{
 			if (nodos.ContainsKey(cedula))
@@ -227,6 +232,7 @@ namespace Arbol_Core.DataStructures
 			return null;
 		}
 
+		// Limpia el grafo eliminando todos los nodos
 		public void Limpiar()
 		{
 			nodos.Clear();

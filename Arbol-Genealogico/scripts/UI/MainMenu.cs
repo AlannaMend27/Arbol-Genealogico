@@ -6,32 +6,36 @@ using System.Threading.Tasks;
 
 namespace ArbolGenealogico.scripts.UI
 {
+    // Clase que representa el menú principal de la aplicación
     public partial class MainMenu : Node2D
+    {
+        private Button btnIngresarMiembros;
+        private Button btnVerMapa;
+
+        // Método que se ejecuta al cargar la escena, inicializando los botones
+        public override void _Ready()
         {
-            private Button btnIngresarMiembros;
-            private Button btnVerMapa;
+            // Obtener referencias a los botones por su ruta en el árbol de nodos
+            btnIngresarMiembros = GetNode<Button>("MenuBackground/Button");
+            btnVerMapa = GetNode<Button>("MenuBackground/Button2");
 
-            public override void _Ready()
-            {
-                // Obtener referencias a los botones por su ruta en el árbol de nodos
-                btnIngresarMiembros = GetNode<Button>("MenuBackground/Button");
-                btnVerMapa = GetNode<Button>("MenuBackground/Button2");
-
-                // Conectar las señales de los botones
-                btnIngresarMiembros.Pressed += OnIngresarMiembrosPressed;
-                btnVerMapa.Pressed += OnVerMapaPressed;
-            }
-
-            private void OnIngresarMiembrosPressed()
-            {
-                // Cambiar a la escena del árbol
-                GetTree().ChangeSceneToFile("res://scenes/Tree.tscn");
-            }
-
-            private void OnVerMapaPressed()
-            {
-                // Cambiar a la escena del mapa
-                GetTree().ChangeSceneToFile("res://scenes/Map.tscn");
-            }
+            // Conectar las señales de los botones
+            btnIngresarMiembros.Pressed += OnIngresarMiembrosPressed;
+            btnVerMapa.Pressed += OnVerMapaPressed;
         }
+
+        // Maneja el evento de presionar el botón para ingresar miembros
+        private void OnIngresarMiembrosPressed()
+        {
+            // Cambiar a la escena del árbol
+            GetTree().ChangeSceneToFile("res://scenes/Tree.tscn");
+        }
+
+        // Maneja el evento de presionar el botón para ver el mapa
+        private void OnVerMapaPressed()
+        {
+            // Cambiar a la escena del mapa
+            GetTree().ChangeSceneToFile("res://scenes/Map.tscn");
+        }
+    }
 }

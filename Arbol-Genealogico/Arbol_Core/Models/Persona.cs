@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Arbol_Core.Models
 {
+	// Clase que representa a una persona en el árbol genealógico
 	public partial class Persona
 	{
 		// Propiedades básicas
@@ -38,7 +39,7 @@ namespace Arbol_Core.Models
 
 
 		// Constructor de la clase pesona
-	
+		// Constructor que inicializa las propiedades de la persona
 		public Persona(string nombre, string apellido, string cedula, DateTime fechaNacimiento,
 					  int edad, double latitud, double longitud, string foto,
 					  string tipoPersona)
@@ -61,6 +62,7 @@ namespace Arbol_Core.Models
 		}
 		
 		// Métodos de relaciones familiares
+		// Agrega un hijo a la lista de hijos de la persona
 		public void AgregarHijo(Persona hijo)
 		{
 			if (hijo == null || Hijos.Contains(hijo))
@@ -76,6 +78,7 @@ namespace Arbol_Core.Models
 			hijo.Generacion = this.Generacion + 1;
 		}
 		
+		// Remueve un hijo de la lista de hijos de la persona
 		public void RemoverHijo(Persona hijo)
 		{
 			if (hijo == null)
@@ -89,6 +92,7 @@ namespace Arbol_Core.Models
 				hijo.Madre = null;
 		}
 		
+		// Establece los padres de la persona y actualiza la generación
 		public void EstablecerPadres(Persona padre, Persona madre)
 		{
 			if (padre != null)
@@ -108,6 +112,7 @@ namespace Arbol_Core.Models
 			ActualizarGeneracion();
 		}
 		
+		// Actualiza la generación de la persona basada en sus padres
 		private void ActualizarGeneracion()
 		{
 			int generacionPadre = Padre?.Generacion ?? -1;
@@ -115,6 +120,7 @@ namespace Arbol_Core.Models
 			Generacion = Math.Max(generacionPadre, generacionMadre) + 1;
 		}
 		
+		// Obtiene la lista de hermanos de la persona
 		public List<Persona> ObtenerHermanos()
 		{
 			var hermanos = new List<Persona>();
@@ -148,6 +154,7 @@ namespace Arbol_Core.Models
 		}
 		
 		// Métodos de ubicación y distancia
+		// Calcula la distancia entre la persona y otra persona
 		public double CalcularDistancia(Persona otra)
 		{
 			if (otra == null || !TieneCoordenadasValidas() || !otra.TieneCoordenadasValidas())
@@ -162,6 +169,7 @@ namespace Arbol_Core.Models
 		}
 		
 		// Validación de datos
+		// Verifica si la persona tiene datos válidos
 		public bool EsValido()
 		{
 			return !string.IsNullOrWhiteSpace(Nombre) &&
@@ -172,6 +180,7 @@ namespace Arbol_Core.Models
 		}
 
 		// validaciones de coordenadas
+		// Verifica si las coordenadas de la persona son válidas
 		public bool TieneCoordenadasValidas()
 		{
 
@@ -182,6 +191,7 @@ namespace Arbol_Core.Models
 
 		}
 
+		// Verifica si las coordenadas de la persona están en tierra
 		private bool EstaEnTierra()
 		{
 
@@ -245,6 +255,7 @@ namespace Arbol_Core.Models
 			return false;
 		}
 			
+		// Obtiene una lista de errores de validación para la persona
 		public List<string> ObtenerErroresValidacion()
 		{
 			var errores = new List<string>();
@@ -277,6 +288,7 @@ namespace Arbol_Core.Models
 		}
 		
 		// Métodos de información
+		// Devuelve una representación en cadena de la persona
 		public override string ToString()
 		{
 			return $"{NombreCompleto} ({Cedula}) - {Edad} años";
