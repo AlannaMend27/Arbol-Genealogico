@@ -101,53 +101,38 @@ namespace ArbolGenealogico.scripts.UI
 		// Generar toda la visualización del árbol
 		public void GenerarVisualizacion()
 		{
-			GD.Print("=== INICIANDO GENERACIÓN DE VISUALIZACIÓN ===");
-			
 			// Limpiar visualización anterior
 			LimpiarVisualizacion();
-			
+
 			if (arbol == null)
 			{
-				GD.PrintErr("ERROR: El árbol es NULL");
 				return;
 			}
-			
-			GD.Print($"Árbol tiene {arbol.CantidadMiembros} miembros");
-			
+
 			if (arbol.CantidadMiembros == 0)
 			{
-				GD.Print("No hay personas para visualizar - árbol vacío");
 				return;
 			}
-			
+
 			// Obtener fundadores
 			var fundadores = arbol.ObtenerPersonasFundadoras();
-			
-			GD.Print($"Fundadores encontrados: {fundadores.Count}");
-			
+
 			if (fundadores.Count == 0)
 			{
-				GD.PrintErr("No hay fundadores en el árbol");
 				return;
 			}
-			
+
 			// Calcular posiciones para cada generación
 			var posicionesPorGeneracion = CalcularPosiciones();
-			
+
 			// Crear nodos visuales para todas las personas
-			GD.Print("Creando nodos visuales...");
 			foreach (var persona in arbol.ObtenerTodasLasPersonas())
 			{
 				CrearNodoVisual(persona, posicionesPorGeneracion);
-				GD.Print($"  - Nodo creado para: {persona.NombreCompleto} en posición {posicionesPorGeneracion[persona.Cedula]}");
 			}
-			
+
 			// Dibujar conexiones entre padres e hijos
-			GD.Print("Dibujando conexiones...");
 			DibujarConexiones();
-			
-			GD.Print($"✓ Visualización generada: {nodosVisuales.Count} nodos");
-			GD.Print("=== FIN GENERACIÓN ===");
 		}
 		
 		// Calcular posiciones para todas las personas
@@ -200,11 +185,10 @@ namespace ArbolGenealogico.scripts.UI
 		{
 			if (nodosVisuales.ContainsKey(persona.Cedula))
 			{
-				GD.Print($"    Nodo ya existe para {persona.NombreCompleto}");
 				return;
 			}
-			
-			GD.Print($"    Creando nodo para {persona.NombreCompleto}...");
+
+			// creando nodo para persona
 			
 			// Si no hay escena empaquetada, crear un nodo simple
 			NodoPersonaVisual nodoVisual;
@@ -212,12 +196,10 @@ namespace ArbolGenealogico.scripts.UI
 			if (nodoPersonaScene != null)
 			{
 				nodoVisual = nodoPersonaScene.Instantiate<NodoPersonaVisual>();
-				GD.Print("      Usando escena empaquetada");
 			}
 			else
 			{
 				nodoVisual = new NodoPersonaVisual();
-				GD.Print("      Usando nodo programático");
 			}
 			
 			// Configurar el nodo visual
@@ -227,16 +209,10 @@ namespace ArbolGenealogico.scripts.UI
 			if (posiciones.ContainsKey(persona.Cedula))
 			{
 				nodoVisual.Position = posiciones[persona.Cedula];
-				GD.Print($"      Posición: {nodoVisual.Position}");
-			}
-			else
-			{
-				GD.PrintErr($"      ERROR: No hay posición para {persona.Cedula}");
 			}
 			
 			contenedorNodos.AddChild(nodoVisual);
 			nodosVisuales[persona.Cedula] = nodoVisual;
-			GD.Print($"      ✓ Nodo agregado al contenedor");
 		}
 		
 		// Dibujar las conexiones entre padres e hijos
@@ -396,19 +372,7 @@ namespace ArbolGenealogico.scripts.UI
 		
 		private void MostrarInformacion()
 		{
-			GD.Print($"\n=== {persona.NombreCompleto} ===");
-			GD.Print($"Cédula: {persona.Cedula}");
-			GD.Print($"Edad: {persona.Edad} años");
-			GD.Print($"Género: {persona.GeneroPersona}");
-			GD.Print($"Estado: {(persona.EstaVivo ? "Vivo" : "Fallecido")}");
-			GD.Print($"Generación: {persona.Generacion}");
-			
-			if (persona.Padre != null)
-				GD.Print($"Padre: {persona.Padre.NombreCompleto}");
-			if (persona.Madre != null)
-				GD.Print($"Madre: {persona.Madre.NombreCompleto}");
-			if (persona.Hijos.Count > 0)
-				GD.Print($"Hijos: {persona.Hijos.Count}");
+			// Mostrar información en UI (si se desea, implementar un diálogo en vez de imprimir en consola)
 		}
 	}
 }

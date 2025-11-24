@@ -14,12 +14,10 @@ public partial class EventBus : Node
     
     public override void _Ready()
     {
-        GD.Print("EventBus inicializado correctamente");
     }
     
     public void NotificarPersonaAgregada()
     {
         EmitSignal(SignalName.PersonaAgregada);
-        GD.Print("Señal PersonaAgregada emitida");
     }
 }

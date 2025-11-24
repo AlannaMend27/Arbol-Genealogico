@@ -5,6 +5,9 @@ using Arbol_Core.Models;
 
 namespace Arbol_Core.DataStructures
 {
+	/// <summary>
+	/// Clase que representa la estructura del árbol genealógico y gestiona las relaciones familiares
+	/// </summary>
 	public partial class Arbol
 	{
 		// Diccionario para acceso rápido a personas por cédula
@@ -16,15 +19,20 @@ namespace Arbol_Core.DataStructures
 		// Propiedad para saber cuántas personas hay
 		public int CantidadMiembros => todasLasPersonas.Count;
 		
-		// Constructor
+		/// <summary>
+		/// Constructor de la clase
+		/// </summary>
 		public Arbol()
 		{
 			personasPorCedula = new Dictionary<string, Persona>();
 			todasLasPersonas = new List<Persona>();
 		}
 
-		// Agregar una persona al árbol
-		// La persona ya debe tener asignados su Padre y Madre (pueden ser null si es fundador)
+		/// <summary>
+		/// Agrega una persona al árbol genealógico con sus relaciones familiares
+		/// </summary>
+		/// <param name="nuevaPersona">La persona a agregar al árbol</param>
+		/// <returns>True si la persona se agregó exitosamente, false si ya existe o es inválida</returns>
 		public bool AgregarPersona(Persona nuevaPersona)
 		{
 			// Validación básica
@@ -78,7 +86,11 @@ namespace Arbol_Core.DataStructures
 			return true;
 		}
 
-		//Actualzar la generacion de la persona de acuerdo a sus padres
+
+		/// <summary>
+		/// Actualiza la generación de una persona basándose en la generación de sus padres
+		/// </summary>
+		/// <param name="persona">La persona cuya generación se actualizará</param>
 		private void ActualizarGeneracion(Persona persona)
 		{
 			if (persona == null)
@@ -99,7 +111,10 @@ namespace Arbol_Core.DataStructures
 			persona.Generacion = Math.Max(generacionPadre, generacionMadre) + 1;
 		}	
 		
-		//Actualizar la generacion de la persona de acuerdo a su conyugue (para tipo de persona conyugue)
+		/// <summary>
+		/// Actualiza la generación de un cónyuge para que coincida con la generación de su pareja
+		/// </summary>
+		/// <param name="persona">La persona cuya generación se actualizará basándose en su cónyuge</param>
 		private void ActualizarGeneracionConyugue(Persona persona)
         {
 			if (persona == null)
@@ -114,8 +129,12 @@ namespace Arbol_Core.DataStructures
 
 			persona.Generacion = persona.Conyuge.Generacion; 
         }
-		
-		// Buscar una persona por su cédula
+
+		/// <summary>
+		/// Busca una persona en el árbol genealógico por su número de cédula
+		/// </summary>
+		/// <param name="cedula">El número de cédula de la persona a buscar</param>
+		/// <returns>La persona encontrada o null si no existe en el árbol</returns>		
 		public Persona BuscarPorCedula(string cedula)
 		{
 			if (string.IsNullOrEmpty(cedula))
@@ -125,13 +144,19 @@ namespace Arbol_Core.DataStructures
 			return persona;
 		}
 		
-		// Obtener todas las personas del árbol
+		/// <summary>
+		/// Obtiene una copia de la lista con todas las personas registradas en el árbol genealógico
+		/// </summary>
+		/// <returns>Lista con todas las personas del árbol</returns>
 		public List<Persona> ObtenerTodasLasPersonas()
 		{
 			return new List<Persona>(todasLasPersonas);
 		}
 		
-		// Obtener las personas fundadoras (generación 0)
+		/// <summary>
+		/// Obtiene una lista de las personas fundadoras del árbol genealógico (generación 0)
+		/// </summary>
+		/// <returns>Lista con las personas de la generación 0</returns>
 		public List<Persona> ObtenerPersonasFundadoras()
 		{
 			var fundadores = new List<Persona>();
@@ -147,7 +172,9 @@ namespace Arbol_Core.DataStructures
 			return fundadores;
 		}
 		
-		// Limpiar todo el árbol
+		/// <summary>
+		/// Elimina todas las personas del árbol genealógico, dejándolo vacío
+		/// </summary>
 		public void LimpiarArbol()
 		{
 			personasPorCedula.Clear();
